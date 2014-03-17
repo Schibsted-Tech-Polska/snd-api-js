@@ -1,10 +1,10 @@
 {
-  "name": "snd-api-js",
-  "version": "0.0.0",
+  "name": "sndapi-js",
+  "version": "0.1.0",
   "description": "SND API helper library",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "qunit -c ./src/sndapi.js -t ./test/sndapi-test.js"
   },
   "repository": {
     "type": "git",
@@ -21,6 +21,9 @@
     "gulp": "~3.5.6",
     "gulp-concat": "~2.1.7",
     "gulp-coffee": "~1.4.1",
-    "gulp-uglify": "~0.2.1"
+    "gulp-uglify": "~0.2.1",
+    "qunit": "~0.6.2",
+    "xmlhttprequest": "~1.6.0",
+    "sinon": "~1.9.0"
   }
 }

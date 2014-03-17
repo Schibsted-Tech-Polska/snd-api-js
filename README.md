@@ -20,3 +20,13 @@ Usage
 	        console.error("request failed");
 	        console.error(error);
 	    });
+
+
+Building
+---------
+
+`npm` and `gulp` are required to build this project. Then just run
+
+	gulp
+
+and the `build/sndapi.min.js` file should be updated (and the filesystem watched for changes).
