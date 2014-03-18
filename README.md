@@ -12,11 +12,14 @@ Usage
     });
     api.init();
 	api.ajax({ url: "publication/common/sections/1/auto" })
-	    .success(function(data) {
-	        console.log(data);
+	    .success(function(data, statusDetails) {
+	    	var println = (console && console.log) ? console.log : function(){};
+	        println("HTTP response code: " + statusDetails.statusCode);
+	        println("HTTP status text:   " + statusDetails.statusText);
+	        ok(data === statusDetails.response);
 	        ok(data, "data received");
 	    })
-	    .fail(function(error) {
+	    .fail(function(statusDetails) {
 	        console.error("request failed");
 	        console.error(error);
 	    });
