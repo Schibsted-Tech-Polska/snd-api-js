@@ -39,6 +39,16 @@
                 console.error(msg);
             };
 
+        function getState() {
+            return {
+                tokenIsSet     : !!(state.token),
+                tokenTimerIsSet: !!(state.tokenTimer)
+            }
+        }
+
+        /**
+         * initializes the SND API and fetches a new token from the server
+         */
         function init() {
             if (!apiOptions.key) {
                 throw new Error("API key is required for SND API initalization");
@@ -55,6 +65,7 @@
             })
                 .success(function(response, statusDetails) {
                     state.token = response.token;
+                    // what happens here is not production ready :)
                     log("token: " + state.token);
                     log(statusDetails);
                 })
@@ -163,7 +174,7 @@
             // adding signature
             if (state.token && requestOtions.sign) { req.setRequestHeader('x-snd-apisignature', state.token); }
             if (requestOtions.postData) { req.setRequestHeader('Content-type', 'application/x-www-form-urlencoded'); }
-            if (preferJSON) { req.setRequestHeader('Accept', 'application/javascript, application/json'); }
+            if (requestOtions.preferJSON) { req.setRequestHeader('Accept', 'application/javascript, application/json'); }
 
             req.onreadystatechange = function() {
                 if (req.readyState !== 4) { return; }
@@ -217,20 +228,11 @@
             return xmlhttp;
         }
 
-        function touch_private_parts() {
-            return {
-                getToken     : function() { return state.token; },
-                getTokenTimer: function() { return state.tokenTimer; }
-            };
-        }
-
         publicApi = {
-            init: init,
-            ajax: ajax
+            init    : init,
+            getState: getState,
+            ajax    : ajax
         };
-        if (QUnit) {
-            publicApi.touch_private_parts = touch_private_parts;
-        }
 
         return publicApi;
     };
