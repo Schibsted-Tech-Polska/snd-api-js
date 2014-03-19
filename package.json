@@ -1,29 +1,29 @@
 {
-  "name": "sndapi-js",
-  "version": "0.1.0",
-  "description": "SND API helper library",
-  "main": "index.js",
-  "scripts": {
-    "test": "qunit -c ./src/sndapi.js -t ./test/sndapi-test.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git@git.ikari.pl:git/sndapi-js.git"
-  },
-  "keywords": [
-    "javascript",
-    "snd",
-    "api"
-  ],
-  "author": "Cezar \"ikari\" Pokorski",
-  "license": "BSD-2-Clause",
-  "devDependencies": {
-    "gulp": "~3.5.6",
-    "gulp-concat": "~2.1.7",
-    "gulp-coffee": "~1.4.1",
-    "gulp-uglify": "~0.2.1",
-    "qunit": "~0.6.2",
-    "xmlhttprequest": "~1.6.0",
-    "sinon": "~1.9.0"
-  }
+    "name"           : "sndapi-js",
+    "version"        : "0.1.0",
+    "description"    : "SND API helper library",
+    "main"           : "index.js",
+    "scripts"        : {
+        "test": "casperjs test --includes=test/casper-helpers.coffee --cookies-file=/dev/null? test/integration"
+    },
+    "repository"     : {
+        "type": "git",
+        "url" : "git@git.ikari.pl:git/sndapi-js.git"
+    },
+    "keywords"       : [
+        "javascript",
+        "snd",
+        "api"
+    ],
+    "author"         : "Cezar \"ikari\" Pokorski",
+    "license"        : "BSD-2-Clause",
+    "devDependencies": {
+        "gulp"          : "~3.5.6",
+        "gulp-concat"   : "~2.1.7",
+        "gulp-coffee"   : "~1.4.1",
+        "gulp-uglify"   : "~0.2.1",
+        "sinon"         : "~1.9.0",
+        "express"       : "~3.4.8",
+        "gulp-qunit"    : "~0.3.0"
+    }
 }
