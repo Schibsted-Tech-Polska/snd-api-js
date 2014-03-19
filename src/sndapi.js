@@ -53,13 +53,13 @@
             if (!apiOptions.key) {
                 throw new Error("API key is required for SND API initalization");
             }
-            refreshToken();
             if (state.tokenTimer) { clearInterval(state.tokenTimer); }
             state.tokenTimer = setInterval(refreshToken, apiOptions.refreshInterval);
+            return refreshToken();
         }
 
         function refreshToken() {
-            ajax({
+            return ajax({
                 sign: false,
                 url : apiOptions.signatureServiceUrl + "?api-key=" + apiOptions.key
             })
@@ -97,7 +97,7 @@
                 }
             }
             return result;
-        }
+        } 
 
         function ajax(options) {
             var requestOtions = mergeOptions({
@@ -172,9 +172,11 @@
             // req.setRequestHeader('User-Agent', 'XMLHTTP/1.0');
 
             // adding signature
-            if (state.token && requestOtions.sign) { req.setRequestHeader('x-snd-apisignature', state.token); }
+            if (state.token && requestOtions.sign) { req.setRequestHeader('X-Snd-Apisignature', state.token); }
             if (requestOtions.postData) { req.setRequestHeader('Content-type', 'application/x-www-form-urlencoded'); }
-            if (requestOtions.preferJSON) { req.setRequestHeader('Accept', 'application/javascript, application/json'); }
+            if (requestOtions.preferJSON) {
+                req.setRequestHeader('Accept', 'application/javascript, application/json');
+            }
 
             req.onreadystatechange = function() {
                 if (req.readyState !== 4) { return; }
@@ -215,17 +217,13 @@
         ];
 
         function createXMLHTTPObject() {
-            var xmlhttp = false;
+            var XmlHttp = false;
             for (var i = 0; i < XMLHttpFactories.length; i++) {
-                try {
-                    xmlhttp = XMLHttpFactories[i]();
-                }
-                catch (e) {
-                    continue;
-                }
+                try { XmlHttp = XMLHttpFactories[i](); }
+                catch (e) { continue; }
                 break;
             }
-            return xmlhttp;
+            return XmlHttp;
         }
 
         publicApi = {
