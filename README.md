@@ -21,7 +21,7 @@ Usage
 	    })
 	    .fail(function(statusDetails) {
 	        console.error("request failed");
-	        console.error(error);
+	        console.error("Response code: " + statusDetails.statusCode);
 	    });
 
 
@@ -33,3 +33,22 @@ Building
 	gulp
 
 and the `build/sndapi.min.js` file should be updated (and the filesystem watched for changes).
+
+
+Testing
+-------
+
+That's under development. The goal is that when you run `gulp test` or `npm test`, it should just do the unit tests (currently written for QUnit and placed in `andapi-test.js` file). 
+
+Unfortunately right now the `gulp-qunit` plugin doesn't seem to accept a HTTP protocol URL as the argument, only a local file, and when it uses a local file, its PhantomJS doesn't resolve other local files referenced by just `src="qunit.js"` and such. 
+
+Right now you have to run the server in one session, with 
+
+		coffee test/server.coffee
+
+and it will server the static files + respond with mock API responses for future testing (tests should not depend on a working API server somewhere on the Internet), and in the second window you can:
+
+		gulp test
+
+It will load the file that would fetch the other files form localhost via HTTP.
+
