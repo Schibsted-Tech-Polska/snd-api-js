@@ -8,9 +8,9 @@ Usage
 -----
 
 	var api = new SNDAPI({
-        key: "your123secret789key"
+        key: "your123secret789key" // also known as client ID in some docs.
     });
-    api.init();
+    api.init(); // you can also attach .success and .fail here
 	api.ajax({ url: "publication/common/sections/1/auto" })
 	    .success(function(data, statusDetails) {
 	    	var println = (console && console.log) ? console.log : function(){};
@@ -23,6 +23,11 @@ Usage
 	        console.error("request failed");
 	        console.error("Response code: " + statusDetails.statusCode);
 	    });
+
+More documentation
+------------------
+
+We are looking into including `gulp-jsdoc` into the build process so that you would get a more detailed documentation of the available API and its options.
 
 
 Building
@@ -38,7 +43,7 @@ and the `build/sndapi.min.js` file should be updated (and the filesystem watched
 Testing
 -------
 
-That's under development. The goal is that when you run `gulp test` or `npm test`, it should just do the unit tests (currently written for QUnit and placed in `andapi-test.js` file). 
+That's under development. The goal is that when you run `gulp test` or `npm test`, it should just do the unit tests (currently written for QUnit and placed in `sndapi-test.js` file). 
 
 Unfortunately right now the `gulp-qunit` plugin doesn't seem to accept a HTTP protocol URL as the argument, only a local file, and when it uses a local file, its PhantomJS doesn't resolve other local files referenced by just `src="qunit.js"` and such. 
 
