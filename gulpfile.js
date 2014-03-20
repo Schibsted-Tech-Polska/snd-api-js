@@ -28,10 +28,10 @@ gulp.task('test', function() {
     return gulp.src('./test/public/index.html')
         .pipe(qunit());
 });
-/*
+
 gulp.task('test2', function() {
-    return gulp.src('http://localhost:8081')
+    return gulp.src('http://localhost:8081/index.html')
         .pipe(qunit());
 });
-*/
+
 gulp.task('default', ['scripts', 'watch' ]);
