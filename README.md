@@ -37,23 +37,19 @@ Building
 
 	gulp
 
-and the `build/sndapi.min.js` file should be updated (and the filesystem watched for changes).
+and the `build/sndapi.min.js` file should be updated (and the tests run, and the filesystem watched for changes).
 
 
 Testing
 -------
 
-That's under development. The goal is that when you run `gulp test` or `npm test`, it should just do the unit tests (currently written for QUnit and placed in `sndapi-test.js` file). 
+That's under development. You can simply run `gulp test` or `npm test` now, but it doesn't finish the process automatically yet. Tests are written for QUnit and placed in `sndapi-test.js` file.
 
-Unfortunately right now the `gulp-qunit` plugin doesn't seem to accept a HTTP protocol URL as the argument, only a local file, and when it uses a local file, its PhantomJS doesn't resolve other local files referenced by just `src="qunit.js"` and such. 
+Unfortunately right now the `gulp-qunit` plugin didn't seem to accept a HTTP protocol URL as the argument, only a local file, and when it uses a local file, its PhantomJS doesn't resolve other local files referenced by just `src="qunit.js"` and such  (though might be fixed by [gulp-qunit pull request #8](https://github.com/jonkemp/gulp-qunit/pull/8)). Therefore we start an Express server that hosts the test files and provides simple mock responses that the real API server should return. The tests will be changed to use this server instead of the real one (that does not work, he he).
 
-Right now you have to run the server in one session, with 
-
-		coffee test/server.coffee
-
-and it will server the static files + respond with mock API responses for future testing (tests should not depend on a working API server somewhere on the Internet), and in the second window you can:
+To serve everything that's required and run the tests, run:
 
 		gulp test
 
-It will load the file that would fetch the other files form localhost via HTTP.
+It will use port 8081 for serving content to PhantomJS with QUnit.
 
