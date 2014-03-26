@@ -4,7 +4,7 @@
     "description"    : "SND API helper library",
     "main"           : "index.js",
     "scripts"        : {
-        "test": "casperjs test --includes=test/casper-helpers.coffee --cookies-file=/dev/null? test/integration"
+        "test": "gulp test"
     },
     "repository"     : {
         "type": "git",
@@ -24,6 +24,6 @@
         "gulp-uglify"   : "~0.2.1",
         "sinon"         : "~1.9.0",
         "express"       : "~3.4.8",
-        "gulp-qunit"    : "~0.3.0"
+        "gulp-qunit"    : "~0.3.2"
     }
 }

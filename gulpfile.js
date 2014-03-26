@@ -1,9 +1,12 @@
+// dependencies
 var gulp = require('gulp'),
+    test_server = require('./test/server.js'),
 // coffee = require('gulp-coffee'), // onomatopeic
     uglify = require('gulp-uglify'),
     concat = require('gulp-concat'),
     qunit = require('gulp-qunit');
 
+// config
 var paths = {
     scripts: ['src/*.js'],
     dest   : 'build',
@@ -12,7 +15,7 @@ var paths = {
 
 gulp.task('scripts', function() {
     // Minify and copy all JavaScript (except vendor scripts)
-    return gulp.src(paths.scripts)
+    gulp.src(paths.scripts)
         //.pipe(coffee())
         .pipe(uglify())
         .pipe(concat(paths.dist))
@@ -24,14 +27,24 @@ gulp.task('watch', function() {
     gulp.watch(paths.scripts, ['scripts']);
 });
 
-gulp.task('test', function() {
+gulp.task('serve', function() {
+    test_server.start();
+});
+
+gulp.task('unserve', /*['serve', 'test'],*/ function() {
+    test_server.stop();
+});
+
+gulp.task('test', /*['serve'],*/ function() {
     return gulp.src('./test/public/index.html')
         .pipe(qunit());
 });
 
+
 gulp.task('test2', function() {
-    return gulp.src('http://localhost:8081/index.html')
+    gulp.src('http://localhost:8081/index.html')
         .pipe(qunit());
 });
 
-gulp.task('default', ['scripts', 'watch' ]);
+gulp.task('default', ['once', 'watch' ]);
+gulp.task('once', ['scripts', /*'serve',*/ 'test'/*, 'unserve'*/ ]);
