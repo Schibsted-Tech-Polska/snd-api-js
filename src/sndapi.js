@@ -1,7 +1,7 @@
 /*global QUnit,ok,expect,start,test,asyncTest,ActiveXObject */
 //noinspection ThisExpressionReferencesGlobalObjectJS
 /*
- * Schibsted Norge Digital API helper.
+ * Schibsted Norge Digital API client helper library.
  *
  * This file is library/framework independent, but runs unit tests if used within mno framework.
 
@@ -29,14 +29,6 @@
             state = {
                 token     : null,
                 tokenTimer: null
-            },
-
-        // replace these on production with empty implementations
-            log = function(msg) {
-                console.log(msg);
-            },
-            err = function(msg) {
-                console.error(msg);
             };
 
         function getState() {
@@ -65,12 +57,9 @@
             })
                 .success(function(response, statusDetails) {
                     state.token = response.token;
-                    // what happens here is not production ready :)
-                    log("token: " + state.token);
-                    log(statusDetails);
                 })
                 .fail(function(error) {
-                    err(error);
+                    // TODO handle it? or leave it to the user?
                 });
         }
 
@@ -97,14 +86,15 @@
                 }
             }
             return result;
-        } 
+        }
 
         function ajax(options) {
             var requestOtions = mergeOptions({
                     // the defaults:
-                    url     : null,
-                    postData: null,
-                    sign    : true
+                    url       : null,
+                    postData  : null,
+                    preferJSON: true,
+                    sign      : true
                 }, options),
                 req = createXMLHTTPObject(),
                 method = (requestOtions.postData) ? "POST" : "GET",
@@ -114,7 +104,6 @@
                 statusDetails = {
                     response: null
                 },
-                preferJSON = true,
                 chainableResult = {};
 
             if (!/^http/.test(requestOtions.url)) {
