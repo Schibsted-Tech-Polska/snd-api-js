@@ -1,9 +1,13 @@
+/*jshint bitwise:true, curly:true, eqeqeq:true, forin:true, noarg:true, noempty:true, nonew:true, undef:true, strict:true, node:true */
+
 var fs = require('fs'),
     express = require('express'),
     path = require('path'),
     root = path.normalize("" + __dirname + "/.."),
     pub = "" + root + "/test/public",
     port = 8081,
+    app,
+    server = null,
 
     allowCORS = function(req, res, next) {
         res.header("Access-Control-Allow-Origin", "*");
@@ -296,12 +300,12 @@ app.get('/news/v2/:publication/:something/:somethingelse/:someId/:somethingEvenM
 });
 
 function start() {
-    app.listen(port);
+    server = app.listen(port);
 }
 
 function stop() {
     //app.close();
-    app = null;
+    server.close();
 }
 
 

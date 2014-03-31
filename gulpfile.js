@@ -41,7 +41,7 @@ gulp.task('serve', function() {
     test_server.start();
 });
 
-gulp.task('unserve', /*['serve', 'test'],*/ function() {
+gulp.task('unserve', ['serve', 'test'], function() {
     test_server.stop();
 });
 
@@ -57,4 +57,4 @@ gulp.task('test2', function() {
 });
 
 gulp.task('default', ['once', 'watch' ]);
-gulp.task('once', ['scripts', /*'serve',*/ 'test'/*, 'unserve'*/ ]);
+gulp.task('once', ['scripts', 'serve', 'test', 'unserve' ]);
