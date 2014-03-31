@@ -20,7 +20,7 @@
     global.SNDAPI = global.SNDAPI || function(options) {
         var apiOptions = mergeOptions({
                 refreshInterval    : 30 * /*minutes*/6e4,
-                signatureServiceUrl: "http://apitestbeta3.medianorge.no/sts/signature",
+                signatureServiceUrl: "http://api.snd.no/sts/signature",
                 prefixUrl          : "http://api.snd.no/news/v2/",
                 key                : null
             }, options),
@@ -183,7 +183,7 @@
                         statusText: req.statusText,
                         response  : req.responseText
                     };
-                    if (req.getResponseHeader("Content-Type") === "application/json" && JSON) {
+                    if (req.getResponseHeader("Content-Type").match(/^application\/json/) && JSON) {
                         statusDetails.response = JSON.parse(statusDetails.response);
                     }
                 }
