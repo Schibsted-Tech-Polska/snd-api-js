@@ -23,22 +23,13 @@ var key = "afLKmZNSMrZybha2zsp9YNhB",
     },
     api = apiFactory(mode);
 
-api.init();
-
-QUnit.module("sndapi.js", {
-    setup: function() {
-        // this.xhr = fake_xhr;
-        // var requests = this.requests = [];
-
-        // this.xhr.onCreate = function (xhr) {
-        //     requests.push(xhr);
-        // };
-    },
-
-    teardown: function() {
-        //this.xhr.restore();
-    }
-});
+api.init()
+    .fail(function() {
+        console.log("You have not started the local server (for example with `gulp serve`), testing with beta API");
+        api = apiFactory("beta");
+        api.init();
+    });
+QUnit.module("sndapi.js");
 QUnit.config.testTimeout = 20000;
 
 test("refresh timer initializes", function(assert) {
