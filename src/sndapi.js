@@ -3,21 +3,29 @@
 /*
  * Schibsted Norge Digital API client helper library.
  *
- * This file is library/framework independent, but runs unit tests if used within mno framework.
+ * This file is library/framework independent. No runtime dependencies.
 
  * If JSON is defined, responses sent with mime type application/json will be parsed automatically.
  */
 
-/**
- * The SND API connector.
- * @type {*}
- */
-
 // wrapper for global
+/**
+ * @namespace
+ */
 (function(global) {
     "use strict";
 
-    global.SNDAPI = global.SNDAPI || function(options) {
+    /**
+     * Public API of the SND news API client. Registers as global SNDAPI constructor.
+     * @constructor
+     * @alias SNDAPI
+     * @param options {object} Options object
+     * @param options.refreshInterval {number?} Interval of signature refresh, defaults to 30 minutes
+     * @param options.signatureServiceUrl {string?} URL for the signature service
+     * @param options.prefixUrl {string?} Common prefix for all URLs called later by the API (you can use partial URLs later)
+     * @param options.key {string} API key of your client
+     */
+    global.SNDAPI = global.SNDAPI || function (options) {
         var apiOptions = mergeOptions({
                 refreshInterval    : 30 * /*minutes*/6e4,
                 signatureServiceUrl: "http://api.snd.no/sts/signature",
@@ -31,15 +39,30 @@
                 tokenTimer: null
             };
 
+        /**
+         * Fetches an object representing the current state of the library.
+         * @memberOf SNDAPI
+         * @public
+         * @instance
+         * @returns {{tokenIsSet: boolean, tokenTimerIsSet: boolean}}
+         */
         function getState() {
             return {
+                /**
+                 * is the token/signature set (received correctly from the server?)
+                 */
                 tokenIsSet     : !!(state.token),
+                /**
+                 * tells if the timer to refresh token automatically is set correctly (for debug)
+                 */
                 tokenTimerIsSet: !!(state.tokenTimer)
             }
         }
 
         /**
          * initializes the SND API and fetches a new token from the server
+         * @memberOf SNDAPI
+         * @instance
          */
         function init() {
             if (!apiOptions.key) {
@@ -50,6 +73,10 @@
             return refreshToken();
         }
 
+        /**
+         * refreshes the token/signature contacting the signature service
+         * @returns {*}
+         */
         function refreshToken() {
             return ajax({
                 sign      : false,
@@ -68,6 +95,8 @@
          * @param defaults {object} Your map of default values for options
          * @param given {object?} Options given in this particular method call, can be undefined
          * @returns {object} A new object with shallow copy of defaults overwritten with shallow copy of given options
+         * @private
+         * @instance
          */
         function mergeOptions(defaults, given) {
             var key, result = {}, hop = Object.hasOwnProperty;
@@ -88,6 +117,17 @@
             return result;
         }
 
+        /**
+         * Make an AJAX call for any data
+         * @param options {object} request parameters
+         * @param options.url {object} request URL, will be prefixed with prefixUrl passed to constructor if relative
+         * @param options.postData {object?} data that will be sent as POST body
+         * @param [options.preferJSON=true] (boolean) do we want to add header asking politely for JSON content-type?
+         * @param [options.sign=true] {boolean} sign this request with the x-snd-apisignature header
+         * @memberOf SNDAPI
+         * @instance
+         * @returns {{}} a promise
+         */
         function ajax(options) {
             var requestOtions = mergeOptions({
                     // the defaults:
