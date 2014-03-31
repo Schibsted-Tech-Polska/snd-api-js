@@ -1,11 +1,32 @@
 var key = "afLKmZNSMrZybha2zsp9YNhB",
-    api = new SNDAPI({
-            key: key
-    });
+    mode = "local",
+    apiFactory = function(mode) {
+        switch (mode) {
+            case "local":
+                return new SNDAPI({
+                    key                : key,
+                    signatureServiceUrl: "http://localhost:8081/sts/signature",
+                    prefixUrl          : "http://127.0.0.1:8081/news/v2/"
+                });
+            case "beta":
+                return  new SNDAPI({
+                    key                : key,
+                    signatureServiceUrl: "http://apitestbeta3.medianorge.no/sts/signature",
+                    prefixUrl          : "http://apitestbeta3.medianorge.no/news/v2/"
+                });
+            case "production":
+                return new new SNDAPI({
+                    key: key
+                });
+        }
+        throw new Exception("unknown mode, use 'local', 'beta' or 'production', ok?");
+    },
+    api = apiFactory(mode);
+
 api.init();
 
 QUnit.module("sndapi.js", {
-     setup: function () {
+    setup: function() {
         // this.xhr = fake_xhr;
         // var requests = this.requests = [];
 
@@ -14,7 +35,7 @@ QUnit.module("sndapi.js", {
         // };
     },
 
-    teardown: function () {
+    teardown: function() {
         //this.xhr.restore();
     }
 });
@@ -34,19 +55,26 @@ asyncTest("we get a token", function(assert) {
         }
         setTimeout(check, 100);
     }
-
     check();
 });
 asyncTest("we can make a request with this token", function(assert) {
     expect(1);
-    api.ajax({ url: "publication/common/sections/1/auto" })
-    .success(function(data) {
-        console.log("response received" + (data.length ? ": " + data.length + " bytes" : ""));
-        assert.ok(typeof data !== "undefined" , "data received");
-        start();
-    })
-    .fail(function(error) {
-        console.error("request failed");
-        console.error(error);
-    });
+    function retry() {
+        if (api.getState().tokenIsSet) {
+            api.ajax({ url: "publication/common/sections/1/auto" })
+                .success(function(data) {
+                    console.log("response received" + (data.length ? ": " + data.length + " bytes" : ""));
+                    assert.ok(typeof data !== "undefined", "data received");
+                    start();
+                })
+                .fail(function(error) {
+                    console.error("request failed");
+                    console.error(error);
+                });
+        }
+        else {
+            setTimeout(retry, 1000);
+        }
+    }
+    retry();
 });

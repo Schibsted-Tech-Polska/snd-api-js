@@ -52,8 +52,8 @@
 
         function refreshToken() {
             return ajax({
-                sign: false,
-                url : apiOptions.signatureServiceUrl + "?api-key=" + apiOptions.key
+                sign      : false,
+                url       : apiOptions.signatureServiceUrl + "?api-key=" + apiOptions.key
             })
                 .success(function(response, statusDetails) {
                     state.token = response.token;
