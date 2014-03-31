@@ -27,7 +27,8 @@ Usage
 More documentation
 ------------------
 
-We are looking into including `gulp-jsdoc` into the build process so that you would get a more detailed documentation of the available API and its options.
+JSDoc is generated with `gulp-jsdoc` and can be viewed in the `build/docs/SNDAPI.html`. Because of most git repo viewers'
+security limitations, it's best viewed offline, from your hard disk.
 
 
 Building
