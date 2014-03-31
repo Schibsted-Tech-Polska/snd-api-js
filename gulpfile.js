@@ -1,15 +1,20 @@
+/*jshint bitwise:true, curly:true, eqeqeq:true, forin:true, noarg:true, noempty:true, nonew:true, undef:true, strict:true, node:true */
+"use strict";
+
 // dependencies
 var gulp = require('gulp'),
     test_server = require('./test/server.js'),
 // coffee = require('gulp-coffee'), // onomatopeic
     uglify = require('gulp-uglify'),
     concat = require('gulp-concat'),
+    jsdoc = require('gulp-jsdoc'),
     qunit = require('gulp-qunit');
 
 // config
 var paths = {
     scripts: ['src/*.js'],
-    dest   : 'build',
+    dest   : 'build/lib',
+    docs   : 'build/docs',
     dist   : 'sndapi.min.js'
 };
 
@@ -20,6 +25,11 @@ gulp.task('scripts', function() {
         .pipe(uglify())
         .pipe(concat(paths.dist))
         .pipe(gulp.dest(paths.dest));
+    gulp.src(paths.scripts)
+        .pipe(jsdoc(paths.docs, {
+            path : 'ink-docstrap',
+            theme: 'cerulean'
+        }));
 });
 
 // Rerun the task when a file changes
