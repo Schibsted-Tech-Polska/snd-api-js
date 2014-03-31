@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Documentation Source: C:/Users/ikari/code/sndapi-js/src/sndapi.js</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
+
+	
+	<link type="text/css" rel="stylesheet" href="styles/site.cerulean.css">
+	
+</head>
+
+<body>
+<div class="container-fluid">
+	<div class="navbar navbar-fixed-top ">
+		<div class="navbar-inner">
+			<a class="brand" href="index.html">Documentation</a>
+			<ul class="nav">
+				
+				<li class="dropdown">
+					<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b
+						class="caret"></b></a>
+
+					<ul class="dropdown-menu ">
+						
+						<li>
+							<a href="SNDAPI.html">SNDAPI</a>
+						</li>
+						
+
+					</ul>
+				</li>
+				
+			</ul>
+		</div>
+	</div>
+
+	<div class="row-fluid">
+
+		
+			<div class="span12">
+				
+				<div id="main">
+					
+
+
+		<h1 class="page-title">Source: C:/Users/ikari/code/sndapi-js/src/sndapi.js</h1>
+    
+    <section>
+        <article>
+            <pre class="sunlight-highlight-javascript ">/*global QUnit,ok,expect,start,test,asyncTest,ActiveXObject */
+//noinspection ThisExpressionReferencesGlobalObjectJS
+/*
+ * Schibsted Norge Digital API client helper library.
+ *
+ * This file is library/framework independent. No runtime dependencies.
+
+ * If JSON is defined, responses sent with mime type application/json will be parsed automatically.
+ */
+
+// wrapper for global
+/**
+ * @namespace
+ */
+(function(global) {
+    "use strict";
+
+    /**
+     * Public API of the SND news API client. Registers as global SNDAPI constructor.
+     * @constructor
+     * @alias SNDAPI
+     * @param options {object} Options object
+     * @param options.refreshInterval {number?} Interval of signature refresh, defaults to 30 minutes
+     * @param options.signatureServiceUrl {string?} URL for the signature service
+     * @param options.prefixUrl {string?} Common prefix for all URLs called later by the API (you can use partial URLs later)
+     * @param options.key {string} API key of your client
+     */
+    global.SNDAPI = global.SNDAPI || function (options) {
+        var apiOptions = mergeOptions({
+                refreshInterval    : 30 * /*minutes*/6e4,
+                signatureServiceUrl: "http://api.snd.no/sts/signature",
+                prefixUrl          : "http://api.snd.no/news/v2/",
+                key                : null
+            }, options),
+            publicApi,
+
+            state = {
+                token     : null,
+                tokenTimer: null
+            };
+
+        /**
+         * Fetches an object representing the current state of the library.
+         * @memberOf SNDAPI
+         * @public
+         * @instance
+         * @returns {{tokenIsSet: boolean, tokenTimerIsSet: boolean}}
+         */
+        function getState() {
+            return {
+                /**
+                 * is the token/signature set (received correctly from the server?)
+                 */
+                tokenIsSet     : !!(state.token),
+                /**
+                 * tells if the timer to refresh token automatically is set correctly (for debug)
+                 */
+                tokenTimerIsSet: !!(state.tokenTimer)
+            }
+        }
+
+        /**
+         * initializes the SND API and fetches a new token from the server
+         * @memberOf SNDAPI
+         * @instance
+         */
+        function init() {
+            if (!apiOptions.key) {
+                throw new Error("API key is required for SND API initalization");
+            }
+            if (state.tokenTimer) { clearInterval(state.tokenTimer); }
+            state.tokenTimer = setInterval(refreshToken, apiOptions.refreshInterval);
+            return refreshToken();
+        }
+
+        /**
+         * refreshes the token/signature contacting the signature service
+         * @returns {*}
+         */
+        function refreshToken() {
+            return ajax({
+                sign      : false,
+                url       : apiOptions.signatureServiceUrl + "?api-key=" + apiOptions.key
+            })
+                .success(function(response, statusDetails) {
+                    state.token = response.token;
+                })
+                .fail(function(error) {
+                    // TODO handle it? or leave it to the user?
+                });
+        }
+
+        /**
+         * Overwrite default options with given ones and return them in a new object (shallow copying here).
+         * @param defaults {object} Your map of default values for options
+         * @param given {object?} Options given in this particular method call, can be undefined
+         * @returns {object} A new object with shallow copy of defaults overwritten with shallow copy of given options
+         * @private
+         * @instance
+         */
+        function mergeOptions(defaults, given) {
+            var key, result = {}, hop = Object.hasOwnProperty;
+            for (key in defaults) {
+                if (hop.call(defaults, key)) {
+                    //noinspection JSUnfilteredForInLoop
+                    result[key] = defaults[key];
+                }
+            }
+            if (typeof given === "object") {
+                for (key in given) {
+                    if (hop.call(given, key)) {
+                        //noinspection JSUnfilteredForInLoop
+                        result[key] = given[key];
+                    }
+                }
+            }
+            return result;
+        }
+
+        /**
+         * Make an AJAX call for any data
+         * @param options {object} request parameters
+         * @param options.url {object} request URL, will be prefixed with prefixUrl passed to constructor if relative
+         * @param options.postData {object?} data that will be sent as POST body
+         * @param [options.preferJSON=true] (boolean) do we want to add header asking politely for JSON content-type?
+         * @param [options.sign=true] {boolean} sign this request with the x-snd-apisignature header
+         * @memberOf SNDAPI
+         * @instance
+         * @returns {{}} a promise
+         */
+        function ajax(options) {
+            var requestOtions = mergeOptions({
+                    // the defaults:
+                    url       : null,
+                    postData  : null,
+                    preferJSON: true,
+                    sign      : true
+                }, options),
+                req = createXMLHTTPObject(),
+                method = (requestOtions.postData) ? "POST" : "GET",
+                onSuccess = [],
+                onError = [],
+                status = null,
+                statusDetails = {
+                    response: null
+                },
+                chainableResult = {};
+
+            if (!/^http/.test(requestOtions.url)) {
+                // prepend the standard prefix
+                requestOtions.url = apiOptions.prefixUrl + requestOtions.url;
+            }
+
+            // public API
+
+            /**
+             * Add success callback to the AJAX call
+             * @param callback
+             * @returns {*}
+             */
+            chainableResult.success = function(callback) {
+                onSuccess.push(callback);
+                return resolveAndReturn();
+            };
+
+
+            /**
+             * Add fail (error) callback to the AJAX call
+             * @param callback
+             * @returns {*}
+             */
+            chainableResult.fail = function(callback) {
+                onError.push(callback);
+                return resolveAndReturn();
+            };
+
+
+            function resolve() {
+                var cb;
+                if (status === "success") {
+                    while (!!(cb = onSuccess.pop())) { cb(statusDetails.response, statusDetails); }
+                } else {
+                    while (!!(cb = onError.pop())) { cb(statusDetails); }
+                }
+            }
+
+            function resolveAndReturn() {
+                if (status) { resolve(); }
+                return chainableResult;
+            }
+
+
+            if (!req) {
+                status = "fail";
+                return chainableResult;
+            }
+            chainableResult.req = req; // publish the object, why not
+            req.open(method, requestOtions.url, true);
+
+            // no idea why this was in stackOverflow code
+            // req.setRequestHeader('User-Agent', 'XMLHTTP/1.0');
+
+            // adding signature
+            if (state.token &amp;&amp; requestOtions.sign) { req.setRequestHeader('X-Snd-Apisignature', state.token); }
+            if (requestOtions.postData) { req.setRequestHeader('Content-type', 'application/x-www-form-urlencoded'); }
+            if (requestOtions.preferJSON) {
+                req.setRequestHeader('Accept', 'application/javascript, application/json');
+            }
+
+            req.onreadystatechange = function() {
+                if (req.readyState !== 4) { return; }
+                if (req.status !== 200 &amp;&amp; req.status !== 304) {
+                    status = "fail";
+                    statusDetails = {
+                        statusCode: req.status,
+                        statusText: req.statusText,
+                        response  : req.responseText
+                    };
+                } else {
+                    status = "success";
+                    statusDetails = {
+                        statusCode: req.status,
+                        statusText: req.statusText,
+                        response  : req.responseText
+                    };
+                    if (req.getResponseHeader("Content-Type").match(/^application\/json/) &amp;&amp; JSON) {
+                        statusDetails.response = JSON.parse(statusDetails.response);
+                    }
+                }
+                resolve();
+            };
+            if (req.readyState === 4) {
+                if (console) {console.warn("I did not expect to get here");}
+                return;
+            }
+            req.send(requestOtions.postData);
+
+            return chainableResult;
+        }
+
+        var XMLHttpFactories = [
+            function() {return new XMLHttpRequest();},
+            function() {return new ActiveXObject("Msxml2.XMLHTTP");},
+            function() {return new ActiveXObject("Msxml3.XMLHTTP");},
+            function() {return new ActiveXObject("Microsoft.XMLHTTP");}
+        ];
+
+        function createXMLHTTPObject() {
+            var XmlHttp = false;
+            for (var i = 0; i &lt; XMLHttpFactories.length; i++) {
+                try { XmlHttp = XMLHttpFactories[i](); }
+                catch (e) { continue; }
+                break;
+            }
+            return XmlHttp;
+        }
+
+        publicApi = {
+            init    : init,
+            getState: getState,
+            ajax    : ajax
+        };
+
+        return publicApi;
+    };
+
+})(typeof global === "object" ? global : this);
+
+/*global module,SNDAPI */
+if (typeof module !== 'undefined' &amp;&amp; module.exports) {
+    module.exports = SNDAPI;
+}</pre>
+        </article>
+    </section>
+
+
+
+
+
+				</div>
+
+				<div class="clearfix"></div>
+				<footer>
+					
+					
+		<span class="jsdoc-message">
+		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha5</a>
+		on Mon Mar 31 2014 16:34:21 GMT+0200 (Central European Daylight Time) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
+		</span>
+				</footer>
+			</div>
+
+			
+			<br clear="both">
+		</div>
+
+	</div>
+	<script src="scripts/sunlight.js"></script>
+	<script src="scripts/sunlight.javascript.js"></script>
+	<script src="scripts/sunlight-plugin.doclinks.js"></script>
+	<script src="scripts/sunlight-plugin.linenumbers.js"></script>
+	<script src="scripts/sunlight-plugin.menu.js"></script>
+	<script src="scripts/jquery.min.js"></script>
+	<script src="scripts/jquery.scrollTo.js"></script>
+	<script src="scripts/jquery.localScroll.js"></script>
+	<script src="scripts/bootstrap-dropdown.js"></script>
+	<script src="scripts/toc.js"></script>
+
+
+	<script>  Sunlight.highlightAll({lineNumbers:,  showMenu: true, enableDoclinks :true}); </script>
+
+	<script>
+		$( function () {
+			$( "#toc" ).toc( {
+				selectors   : "h1,h2,h3,h4",
+				showAndHide : false,
+				scrollTo    : 60
+			} );
+			$( "#toc>ul" ).addClass( "nav nav-pills nav-stacked" );
+			$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+
+		} );
+	</script>
+
+	
+
+</body>
+</html>
