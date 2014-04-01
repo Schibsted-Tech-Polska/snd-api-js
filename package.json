@@ -1,8 +1,8 @@
 {
   "name": "sndapi-js",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "SND API helper library",
-  "main": "index.js",
+  "main": "sndapi.min.js",
   "scripts": {
     "test": "gulp test"
   },

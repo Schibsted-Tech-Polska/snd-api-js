@@ -4,7 +4,6 @@
 // dependencies
 var gulp = require('gulp'),
     test_server = require('./test/server.js'),
-// coffee = require('gulp-coffee'), // onomatopeic
     uglify = require('gulp-uglify'),
     concat = require('gulp-concat'),
     jsdoc = require('gulp-jsdoc'),
@@ -12,10 +11,10 @@ var gulp = require('gulp'),
 
 // config
 var paths = {
-    scripts: ['src/*.js'],
-    dest   : 'build/lib',
-    docs   : 'build/docs',
-    dist   : 'sndapi.min.js'
+    scripts : ['src/*.js'],
+    dest    : './',
+    docs    : './docs',
+    distFile: 'sndapi.min.js'
 };
 
 gulp.task('scripts', function() {
@@ -23,7 +22,7 @@ gulp.task('scripts', function() {
     gulp.src(paths.scripts)
         //.pipe(coffee())
         .pipe(uglify())
-        .pipe(concat(paths.dist))
+        .pipe(concat(paths.distFile))
         .pipe(gulp.dest(paths.dest));
     gulp.src(paths.scripts)
         .pipe(jsdoc(paths.docs, {
@@ -45,16 +44,11 @@ gulp.task('unserve', ['serve', 'test'], function() {
     test_server.stop();
 });
 
-gulp.task('test', /*['serve'],*/ function() {
+gulp.task('test', ['serve'], function() {
     return gulp.src('./test/public/index.html')
         .pipe(qunit());
 });
 
-
-gulp.task('test2', function() {
-    gulp.src('http://localhost:8081/index.html')
-        .pipe(qunit());
-});
 
 gulp.task('default', ['once', 'watch' ]);
 gulp.task('once', ['scripts', 'serve', 'test', 'unserve' ]);

@@ -1,0 +1,28 @@
+{
+    "name"       : "snd-api-js",
+    "version"    : "0.2.1",
+    "authors"    : [
+        "Cezar “ikari” Pokorski <git@ikari.pl>"
+    ],
+    "description": "SND news API helper library",
+    "main"       : "sndapi.min.js",
+    "moduleType" : [
+        "globals"
+    ],
+    "keywords"   : [
+        "javascript",
+        "snd",
+        "api"
+    ],
+    "license"    : "MIT",
+    "private"    : true,
+    "ignore"     : [
+        "node_modules",
+        "bower_components",
+        "src",
+        "gulpfile.js",
+        "package.json",
+        "test",
+        "tests"
+    ]
+}

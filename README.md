@@ -27,7 +27,7 @@ Usage
 More documentation
 ------------------
 
-JSDoc is generated with `gulp-jsdoc` and can be viewed in the `build/docs/SNDAPI.html`. Because of most git repo viewers'
+JSDoc is generated with `gulp-jsdoc` and can be viewed in the `docs/SNDAPI.html`. Because of most git repo viewers'
 security limitations, it's best viewed offline, from your hard disk.
 
 
