@@ -29,9 +29,8 @@ Then, in your code, you create an instance of SNDAPI object (providing at least 
     api.init(); // you can also attach .success and .fail here
 	api.ajax({ url: "publication/common/sections/1/auto" })
 	    .success(function(data, statusDetails) {
-	    	var println = (console && console.log) ? console.log : function(){};
-	        println("HTTP response code: " + statusDetails.statusCode);
-	        println("HTTP status text:   " + statusDetails.statusText);
+	        console.log("HTTP response code: " + statusDetails.statusCode);
+	        console.log("HTTP status text:   " + statusDetails.statusText);
 	        ok(data === statusDetails.response);
 	        ok(data, "data received");
 	    })
