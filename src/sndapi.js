@@ -25,7 +25,7 @@
      * @param options.prefixUrl {string?} Common prefix for all URLs called later by the API (you can use partial URLs later)
      * @param options.key {string} API key of your client
      */
-    global.SNDAPI = global.SNDAPI || function (options) {
+    global.SNDAPI = global.SNDAPI || function(options) {
         var apiOptions = mergeOptions({
                 refreshInterval    : 30 * /*minutes*/6e4,
                 signatureServiceUrl: "http://api.snd.no/sts/signature",
@@ -79,8 +79,8 @@
          */
         function refreshToken() {
             return ajax({
-                sign      : false,
-                url       : apiOptions.signatureServiceUrl + "?api-key=" + apiOptions.key
+                sign: false,
+                url : apiOptions.signatureServiceUrl + "?api-key=" + apiOptions.key
             })
                 .success(function(response, statusDetails) {
                     state.token = response.token;
@@ -204,7 +204,7 @@
             if (state.token && requestOtions.sign) { req.setRequestHeader('X-Snd-Apisignature', state.token); }
             if (requestOtions.postData) { req.setRequestHeader('Content-type', 'application/x-www-form-urlencoded'); }
             if (requestOtions.preferJSON) {
-                req.setRequestHeader('Accept', 'application/javascript, application/json');
+                req.setRequestHeader('Accept', 'application/json');
             }
 
             req.onreadystatechange = function() {
