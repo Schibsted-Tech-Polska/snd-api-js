@@ -7,6 +7,22 @@ sndapi.js
 Usage
 -----
 
+If you use `bower`, you can install this package providing the git repository URL:
+
+    git@git.ikari.pl:schibsted/snd-api-js.git
+
+It should include the minified output file and some documentation in your `bower_components` directory:
+
+    ➜  your_project $  tree bower_components -L 2
+    bower_components
+    `-- snd-api-js
+        |-- README.md
+        |-- bower.json
+        |-- docs
+        `-- sndapi.min.js
+
+Then, in your code, you create an instance of SNDAPI object (providing at least your API client id key, for more options refer to the JSDoc in `docs` directory), initialize it and there make AJAX calls in a familiar way:
+
 	var api = new SNDAPI({
         key: "your123secret789key" // also known as client ID in some docs.
     });
