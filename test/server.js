@@ -1,4 +1,5 @@
 /*jshint bitwise:true, curly:true, eqeqeq:true, forin:true, noarg:true, noempty:true, nonew:true, undef:true, strict:true, node:true */
+"use strict";
 
 var fs = require('fs'),
     express = require('express'),
@@ -37,6 +38,12 @@ app.get('/sts/signature', function(req, res) {
 });
 
 app.get('/news/v2/:publication/:something/:somethingelse/:someId/:somethingEvenMoreElse', function(req, res) {
+    var signature = req.header("X-Snd-Apisignature");
+    if (typeof signature !== "string" && signature.length < 1) {
+        console.error("Request was unsigned!");
+        return res.send(403);
+    }
+    console.log("Request was signed with signature: " + signature);
     return res.send(
 
         {
@@ -312,4 +319,4 @@ function stop() {
 module.exports = {
     start: start,
     stop : stop
-}
+};
