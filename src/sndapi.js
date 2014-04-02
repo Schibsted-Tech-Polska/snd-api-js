@@ -129,7 +129,7 @@
          * @returns {{}} a promise
          */
         function ajax(options) {
-            var requestOtions = mergeOptions({
+            var requestOptions = mergeOptions({
                     // the defaults:
                     url       : null,
                     postData  : null,
@@ -137,7 +137,7 @@
                     sign      : true
                 }, options),
                 req = createXMLHTTPObject(),
-                method = (requestOtions.postData) ? "POST" : "GET",
+                method = (requestOptions.postData) ? "POST" : "GET",
                 onSuccess = [],
                 onError = [],
                 status = null,
@@ -146,9 +146,9 @@
                 },
                 chainableResult = {};
 
-            if (!/^http/.test(requestOtions.url)) {
+            if (!/^http/.test(requestOptions.url)) {
                 // prepend the standard prefix
-                requestOtions.url = apiOptions.prefixUrl + requestOtions.url;
+                requestOptions.url = apiOptions.prefixUrl + requestOptions.url;
             }
 
             // public API
@@ -195,15 +195,15 @@
                 return chainableResult;
             }
             chainableResult.req = req; // publish the object, why not
-            req.open(method, requestOtions.url, true);
+            req.open(method, requestOptions.url, true);
 
             // no idea why this was in stackOverflow code
             // req.setRequestHeader('User-Agent', 'XMLHTTP/1.0');
 
             // adding signature
-            if (state.token && requestOtions.sign) { req.setRequestHeader('X-Snd-Apisignature', state.token); }
-            if (requestOtions.postData) { req.setRequestHeader('Content-type', 'application/x-www-form-urlencoded'); }
-            if (requestOtions.preferJSON) {
+            if (state.token && requestOptions.sign) { req.setRequestHeader('X-Snd-Apisignature', state.token); }
+            if (requestOptions.postData) { req.setRequestHeader('Content-type', 'application/x-www-form-urlencoded'); }
+            if (requestOptions.preferJSON) {
                 req.setRequestHeader('Accept', 'application/json');
             }
 
@@ -230,10 +230,10 @@
                 resolve();
             };
             if (req.readyState === 4) {
-                if (console) {console.warn("I did not expect to get here");}
+                if (global.console) {global.console.warn("I did not expect to get here");}
                 return;
             }
-            req.send(requestOtions.postData);
+            req.send(requestOptions.postData);
 
             return chainableResult;
         }
