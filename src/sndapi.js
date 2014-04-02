@@ -178,9 +178,9 @@
             function resolve() {
                 var cb;
                 if (status === "success") {
-                    while (!!(cb = onSuccess.pop())) { cb(statusDetails.response, statusDetails); }
+                    while (!!(cb = onSuccess.shift())) { cb(statusDetails.response, statusDetails); }
                 } else {
-                    while (!!(cb = onError.pop())) { cb(statusDetails); }
+                    while (!!(cb = onError.shift())) { cb(statusDetails); }
                 }
             }
 
