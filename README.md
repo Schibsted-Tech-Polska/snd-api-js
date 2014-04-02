@@ -9,7 +9,7 @@ Usage
 
 If you use `bower`, you can install this package providing the git repository URL:
 
-    git@git.ikari.pl:schibsted/snd-api-js.git
+    git@bitbucket.org:schibstednorge/snd-api-js.git
 
 It should include the minified output file and some documentation in your `bower_components` directory:
 
