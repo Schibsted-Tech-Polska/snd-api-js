@@ -1,21 +1,22 @@
 {
   "name": "sndapi-js",
-  "version": "0.2.1",
-  "description": "SND API helper library",
+  "version": "0.2.5",
+  "description": "SND news API client helper library",
   "main": "sndapi.min.js",
   "scripts": {
     "test": "gulp test"
   },
   "repository": {
     "type": "git",
-    "url": "git@git.ikari.pl:git/sndapi-js.git"
+    "url": "git@bitbucket.org:schibstednorge/snd-api-js.git",
+    "backup_url": "git@git.ikari.pl:git/sndapi-js.git"
   },
   "keywords": [
     "javascript",
     "snd",
     "api"
   ],
-  "author": "Cezar \"ikari\" Pokorski",
+  "author": "Cezar “ikari” Pokorski <git@ikari.pl>",
   "license": "BSD-2-Clause",
   "devDependencies": {
     "gulp": "~3.5.6",
@@ -25,6 +26,11 @@
     "sinon": "~1.9.0",
     "express": "~3.4.8",
     "gulp-qunit": "~0.3.2",
-    "gulp-jsdoc": "~0.1.2"
+    "gulp-jsdoc": "~0.1.2",
+    "gulp-bump": "~0.1.7",
+    "gulp-prompt": "~0.1.1",
+    "gulp-util": "~2.2.14",
+    "gulp-filter": "~0.3.1",
+    "gulp-tag-version": "git://github.com/ikari-pl/gulp-tag-version"
   }
 }
