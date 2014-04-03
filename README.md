@@ -1,4 +1,4 @@
-snd-api-js <iframe src="//benschwarz.github.io/bower-badges/embed.html?pkgname=snd-api-js" width="160" height="32" allowtransparency="true" frameborder="0" scrolling="0"></iframe>
+snd-api-js 
 ==========
 
 `sndapi.js` is Schibsted Norge Digital API utility library to access the API from JavaScript. It manages the tokens thrown back and forth for authorization of the requests.
