@@ -15,9 +15,9 @@
 (function(global) {
     "use strict";
 
-    function SchönfinkelizedResult() {
-        if (!(this instanceof  SchönfinkelizedResult)) {
-            return new SchönfinkelizedResult();
+    function SchoenfinkelizedResult() {
+        if (!(this instanceof  SchoenfinkelizedResult)) {
+            return new SchoenfinkelizedResult();
         }
 
         // instance properties
@@ -31,7 +31,7 @@
      * @param callback
      * @returns {*}
      */
-    SchönfinkelizedResult.prototype.success = function(callback) {
+    SchoenfinkelizedResult.prototype.success = function(callback) {
         this._onSuccess.push(callback);
         return this;
     };
@@ -41,12 +41,12 @@
      * @param callback
      * @returns {*}
      */
-    SchönfinkelizedResult.prototype.fail = function(callback) {
+    SchoenfinkelizedResult.prototype.fail = function(callback) {
         this._onError.push(callback);
         return this;
     };
 
-    SchönfinkelizedResult.prototype.resolve = function() {
+    SchoenfinkelizedResult.prototype.resolve = function() {
         var cb;
         while (!!(cb = this._onSuccess.shift())) {
             cb.apply(this, arguments);
@@ -54,7 +54,7 @@
         return this;
     };
 
-    SchönfinkelizedResult.prototype.reject = function() {
+    SchoenfinkelizedResult.prototype.reject = function() {
         var cb;
         while (!!(cb = this._onError.shift())) {
             cb.apply(this, arguments);
@@ -62,7 +62,7 @@
         return this;
     };
 
-    SchönfinkelizedResult.prototype.propagateTo = function(otherResult) {
+    SchoenfinkelizedResult.prototype.propagateTo = function(otherResult) {
         this._onSuccess = this._onSuccess.concat(otherResult._onSuccess);
         this._onError = this._onError.concat(otherResult._onError);
         return this;
@@ -205,7 +205,7 @@
                 statusDetails = {
                     response: null
                 },
-                result = new SchönfinkelizedResult();
+                result = new SchoenfinkelizedResult();
 
 
             if (!/^http/.test(requestOptions.url)) {
