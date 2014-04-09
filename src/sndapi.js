@@ -1,4 +1,4 @@
-/*global QUnit,ok,expect,start,test,asyncTest,ActiveXObject */
+/*global global,ActiveXObject */
 //noinspection ThisExpressionReferencesGlobalObjectJS
 /*
  * Schibsted Norge Digital API client helper library.
@@ -15,6 +15,60 @@
 (function(global) {
     "use strict";
 
+    function SchönfinkelizedResult() {
+        if (!(this instanceof  SchönfinkelizedResult)) {
+            return new SchönfinkelizedResult();
+        }
+
+        // instance properties
+        this._onSuccess = [];
+        this._onError = [];
+
+    }
+
+    /**
+     * Add success callback to the AJAX call
+     * @param callback
+     * @returns {*}
+     */
+    SchönfinkelizedResult.prototype.success = function(callback) {
+        this._onSuccess.push(callback);
+        return this;
+    };
+
+    /**
+     * Add fail (error) callback to the AJAX call
+     * @param callback
+     * @returns {*}
+     */
+    SchönfinkelizedResult.prototype.fail = function(callback) {
+        this._onError.push(callback);
+        return this;
+    };
+
+    SchönfinkelizedResult.prototype.resolve = function() {
+        var cb;
+        while (!!(cb = this._onSuccess.shift())) {
+            cb.apply(this, arguments);
+        }
+        return this;
+    };
+
+    SchönfinkelizedResult.prototype.reject = function() {
+        var cb;
+        while (!!(cb = this._onError.shift())) {
+            cb.apply(this, arguments);
+        }
+        return this;
+    };
+
+    SchönfinkelizedResult.prototype.propagateTo = function(otherResult) {
+        this._onSuccess = this._onSuccess.concat(otherResult._onSuccess);
+        this._onError = this._onError.concat(otherResult._onError);
+        return this;
+    };
+
+
     /**
      * Public API of the SND news API client. Registers as global SNDAPI constructor.
      * @constructor
@@ -28,7 +82,7 @@
     global.SNDAPI = global.SNDAPI || function(options) {
         var apiOptions = mergeOptions({
                 refreshInterval    : 30 * /*minutes*/6e4,
-                signatureServiceUrl: "http://api.snd.no/sts/signature",
+                signatureServiceUrl: "https://api.snd.no/sts/signature",
                 prefixUrl          : "http://api.snd.no/news/v2/",
                 key                : null
             }, options),
@@ -37,7 +91,8 @@
             state = {
                 token     : null,
                 tokenTimer: null
-            };
+            },
+            queue = [];
 
         /**
          * Fetches an object representing the current state of the library.
@@ -56,7 +111,7 @@
                  * tells if the timer to refresh token automatically is set correctly (for debug)
                  */
                 tokenTimerIsSet: !!(state.tokenTimer)
-            }
+            };
         }
 
         /**
@@ -83,7 +138,14 @@
                 url : apiOptions.signatureServiceUrl + "?api-key=" + apiOptions.key
             })
                 .success(function(response, statusDetails) {
+                    var request;
                     state.token = response.token;
+
+                    if (queue.length) {
+                        while ((request = queue.shift())) {
+                            ajax(request.options).propagateTo(request.result);
+                        }
+                    }
                 })
                 .fail(function(error) {
                     // TODO handle it? or leave it to the user?
@@ -126,7 +188,7 @@
          * @param [options.sign=true] {boolean} sign this request with the x-snd-apisignature header
          * @memberOf SNDAPI
          * @instance
-         * @returns {{}} a promise
+         * @returns {SchönfinkelizedResult} a promise
          */
         function ajax(options) {
             var requestOptions = mergeOptions({
@@ -138,63 +200,47 @@
                 }, options),
                 req = createXMLHTTPObject(),
                 method = (requestOptions.postData) ? "POST" : "GET",
-                onSuccess = [],
-                onError = [],
+
                 status = null,
                 statusDetails = {
                     response: null
                 },
-                chainableResult = {};
+                result = new SchönfinkelizedResult();
+
 
             if (!/^http/.test(requestOptions.url)) {
                 // prepend the standard prefix
                 requestOptions.url = apiOptions.prefixUrl + requestOptions.url;
             }
 
-            // public API
-
-            /**
-             * Add success callback to the AJAX call
-             * @param callback
-             * @returns {*}
-             */
-            chainableResult.success = function(callback) {
-                onSuccess.push(callback);
-                return resolveAndReturn();
-            };
-
-
-            /**
-             * Add fail (error) callback to the AJAX call
-             * @param callback
-             * @returns {*}
-             */
-            chainableResult.fail = function(callback) {
-                onError.push(callback);
-                return resolveAndReturn();
-            };
-
 
             function resolve() {
-                var cb;
                 if (status === "success") {
-                    while (!!(cb = onSuccess.shift())) { cb(statusDetails.response, statusDetails); }
+                    return result.resolve(statusDetails.response, statusDetails);
                 } else {
-                    while (!!(cb = onError.shift())) { cb(statusDetails); }
+                    return result.reject(statusDetails);
                 }
-            }
-
-            function resolveAndReturn() {
-                if (status) { resolve(); }
-                return chainableResult;
             }
 
 
             if (!req) {
                 status = "fail";
-                return chainableResult;
+                return result;
             }
-            chainableResult.req = req; // publish the object, why not
+            result.req = req; // publish the object, why not
+
+
+            // queue if we are not ready
+            if (!state.token && requestOptions.sign) {
+                queue.push({
+                    options: requestOptions,
+                    result : result
+                });
+                return result;
+            }
+
+
+            // otherwise make the request
             req.open(method, requestOptions.url, true);
 
             // no idea why this was in stackOverflow code
@@ -231,11 +277,11 @@
             };
             if (req.readyState === 4) {
                 if (global.console) {global.console.warn("I did not expect to get here");}
-                return;
+                return null;
             }
             req.send(requestOptions.postData);
 
-            return chainableResult;
+            return result;
         }
 
         var XMLHttpFactories = [
