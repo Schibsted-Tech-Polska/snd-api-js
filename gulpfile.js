@@ -3,7 +3,6 @@
 
 // dependencies
 var gulp = require('gulp'),
-    git = require('gulp-git'),
     bump = require('gulp-bump'),
     filter = require('gulp-filter'),
     test_server = require('./test/server.js'),
@@ -77,23 +76,24 @@ gulp.task('unserve', ['serve', 'test'], function() {
  */
 
 function inc(importance, cake_mustnt_be_a_lie) {
-    var process = gulp.src(paths.versionToBump) // get all the files to bump version in
-        //.pipe(prompt.confirm('Have you commited all the changes to be included by this version?'));
+    var process = gulp.src(paths.versionToBump); // get all the files to bump version in
     if (cake_mustnt_be_a_lie === true) {
         /* never ever do a big release without proper celebration, it's a company policy */
-        //process.pipe(prompt.confirm('Has cake been served to celebrate the release?'));
+        process.pipe(prompt.confirm('Has cake been served to celebrate the release?'));
     }
     process.pipe(bump({type: importance})) // bump the version number in those files
-        .pipe(gulp.dest(paths.dest))  // save it back to filesystem
-        .pipe(git.commit('bumps package version')) // commit the changed version number
-        .pipe(filter(paths.versionToCheck)) // read only one file to get the version number
-        .pipe(tag_version()); // tag it in the repository
+        .pipe(gulp.dest(paths.dest));  // save it back to filesystem
 }
 
 gulp.task('patch', function() { return inc('patch'); });
 gulp.task('feature', function() { return inc('minor'); });
 gulp.task('release', function() { return inc('major', true); });
 
+gulp.task('tag', function() {
+    return gulp.src(paths.versionToCheck) // read only one file to get the version number
+        .pipe(prompt.confirm('Have you commited all the changes to be included by this version?'))
+        .pipe(tag_version()); // tag it in the repository
+});
 
 // by default: build, test, update docs, watch
 // run 'once' to not watch :)
