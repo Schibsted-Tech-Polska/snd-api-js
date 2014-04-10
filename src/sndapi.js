@@ -82,8 +82,8 @@
     global.SNDAPI = global.SNDAPI || function(options) {
         var apiOptions = mergeOptions({
                 refreshInterval    : 30 * /*minutes*/6e4,
-                signatureServiceUrl: "https://api.snd.no/sts/signature",
-                prefixUrl          : "http://api.snd.no/news/v2/",
+                signatureServiceUrl: "//api.snd.no/sts/signature",
+                prefixUrl          : "//api.snd.no/news/v2/",
                 key                : null
             }, options),
             publicApi,
