@@ -77,10 +77,11 @@ gulp.task('unserve', ['serve', 'test'], function() {
  */
 
 function inc(importance, cake_mustnt_be_a_lie) {
-    var process = gulp.src(paths.versionToBump); // get all the files to bump version in
+    var process = gulp.src(paths.versionToBump) // get all the files to bump version in
+        //.pipe(prompt.confirm('Have you commited all the changes to be included by this version?'));
     if (cake_mustnt_be_a_lie === true) {
-        /* never ever do a big release without proper celebration, it's a company Hoshin thing */
-        process.pipe(prompt.confirm('Has cake been served to celebrate the release?'));
+        /* never ever do a big release without proper celebration, it's a company policy */
+        //process.pipe(prompt.confirm('Has cake been served to celebrate the release?'));
     }
     process.pipe(bump({type: importance})) // bump the version number in those files
         .pipe(gulp.dest(paths.dest))  // save it back to filesystem
