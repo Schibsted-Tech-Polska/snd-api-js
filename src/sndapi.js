@@ -208,7 +208,7 @@
                 result = new SchoenfinkelizedResult();
 
 
-            if (!/^http/.test(requestOptions.url)) {
+            if (!/^([a-z]+:)?\/\//.test(requestOptions.url)) {
                 // prepend the standard prefix
                 requestOptions.url = apiOptions.prefixUrl + requestOptions.url;
             }
