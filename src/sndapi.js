@@ -23,7 +23,9 @@
         // instance properties
         this._onSuccess = [];
         this._onError = [];
-
+        // enabling firing callback after promise resolution
+        this._state = 0; // 1 - cool, 2 - not cool
+        this._resolution = null;
     }
 
     /**
@@ -33,6 +35,7 @@
      */
     SchoenfinkelizedResult.prototype.success = function(callback) {
         this._onSuccess.push(callback);
+        this._refire();
         return this;
     };
 
@@ -43,33 +46,55 @@
      */
     SchoenfinkelizedResult.prototype.fail = function(callback) {
         this._onError.push(callback);
+        this._refire();
         return this;
     };
 
     SchoenfinkelizedResult.prototype.resolve = function() {
-        var cb;
+        var cb, args = this._resolution || arguments;
+        this._state = 1;
+        this._resolution = args;
         while (!!(cb = this._onSuccess.shift())) {
-            cb.apply(this, arguments);
+            cb.apply(this, args);
         }
         return this;
     };
 
     SchoenfinkelizedResult.prototype.reject = function() {
-        var cb;
+        var cb, args = this._resolution || arguments;
+        this._state = 2;
+        this._resolution = args;
         while (!!(cb = this._onError.shift())) {
-            cb.apply(this, arguments);
+            cb.apply(this, args);
         }
         return this;
     };
 
-    SchoenfinkelizedResult.prototype.propagateTo = function(otherResult) {
-        this._onSuccess = this._onSuccess.concat(otherResult._onSuccess);
-        this._onError = this._onError.concat(otherResult._onError);
+    SchoenfinkelizedResult.prototype.handleWith = function(otherResult) {
+        this._onSuccess.forEach(function(item) { otherResult._onSuccess.push(item); });
+        this._onError.forEach(function(item) { otherResult._onError.push(item); });
+        this._onSuccess = otherResult._onSuccess; // use the reference
+        this._onError = otherResult._onError; // use the reference
+        this._refire();
         return this;
     };
 
+    SchoenfinkelizedResult.prototype._refire = function() {
+        if (this._state > 0) {
+            // we know the outcome
+            if (this._state === 1) {
+                // if it's good, fire good stuff callbacks.
+                this.resolve();
+            } else {
+                // if it's bad, fire the one responsible.
+                this.reject();
+            }
+        }
+    };
 
-    /**
+
+
+        /**
      * Public API of the SND news API client. Registers as global SNDAPI constructor.
      * @constructor
      * @alias SNDAPI
@@ -143,7 +168,7 @@
 
                     if (queue.length) {
                         while ((request = queue.shift())) {
-                            ajax(request.options).propagateTo(request.result);
+                            ajax(request.options).handleWith(request.result);
                         }
                     }
                 })
