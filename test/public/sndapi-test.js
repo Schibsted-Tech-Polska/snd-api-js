@@ -1,4 +1,4 @@
-/*global QUnit,console,SNDAPI,test,module,asyncTest,expect*/
+/*global QUnit,console,SNDAPI,test,module,asyncTest,start,expect,equal,ok*/
 (function() {
     "use strict";
 
@@ -76,33 +76,48 @@
         retry();
     });
     asyncTest("requests started before grabbing a token are queued", function(assert) {
-        var api = apiFactory(mode),
-            requestMade = false,
-            responseRcvd = false;
+        expect(1);
+        var api = apiFactory(mode);
 
         api.ajax({ url: "publication/common/sections/1/auto" })
             .success(function() {
-                responseRcvd = true;
+                assert.ok(true, "it succeeded");
+                start();
             })
             .fail(function(error) {
                 console.error("request failed");
                 console.error(error);
             });
-
-        requestMade = true;
         api.init();
+    });
 
+    asyncTest("requests without protocol specified prepend prefix", function() {
+        var xhr = this.sandbox.useFakeXMLHttpRequest();
+        var requests = this.requests = [];
+        var that = this;
 
-        function retry() {
-            if (requestMade && responseRcvd) {
-                assert.ok(true, "it succeeded");
-                start();
-            }
-            else {
-                setTimeout(retry, 100);
-            }
+        xhr.onCreate = function(request) {
+            requests.push(request);
+        };
+
+        //var callback = this.spy();
+        console.log(xhr);
+        api.ajax({ url: "publication/common/sections/1/auto" })
+            .success(check)
+            .fail(check);
+
+        function check() {
+            console.error(that.requests);
+
+            equal(1, that.requests.length);
+
+            requests[0].respond(200, { "Content-Type": "application/json" },
+                '[{ id: 12, comment: "Hey there" }]');
+            //ok(callback.calledWith([{ id: 12, comment: "Hey there" }]));
+            //ok(callback.called());
+            ok(true, 'yay');
+            xhr.restore();
+            start();
         }
-
-        retry();
     });
 })();
