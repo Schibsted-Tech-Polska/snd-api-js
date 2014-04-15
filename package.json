@@ -1,6 +1,6 @@
 {
   "name": "sndapi-js",
-  "version": "0.3.5",
+  "version": "0.3.6",
   "description": "SND news API client helper library",
   "main": "sndapi.min.js",
   "scripts": {

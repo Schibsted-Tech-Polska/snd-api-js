@@ -295,7 +295,11 @@
                         response  : req.responseText
                     };
                     if (req.getResponseHeader("Content-Type").match(/^application\/json/) && JSON) {
-                        statusDetails.response = JSON.parse(statusDetails.response);
+                        try {
+                            statusDetails.response = JSON.parse(statusDetails.response);
+                        } catch (e) {
+                            // do not parse :D
+                        }
                     }
                 }
                 resolve();
