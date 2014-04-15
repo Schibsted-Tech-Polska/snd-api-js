@@ -11,7 +11,7 @@
 	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
 
 	
-	<link type="text/css" rel="stylesheet" href="styles/site.cerulean.css">
+	<link type="text/css" rel="stylesheet" href="styles/site.spacelab.css">
 	
 </head>
 
@@ -30,6 +30,10 @@
 						
 						<li>
 							<a href="SNDAPI.html">SNDAPI</a>
+						</li>
+						
+						<li>
+							<a href="SNDAPI_SchoenfinkelizedResult.html">SchoenfinkelizedResult</a>
 						</li>
 						
 
@@ -74,7 +78,7 @@
     
     
     <div class="description">
-        Public API of the SND news API client. Registers as global SNDAPI constructor.
+        <p>Public API of the SND news API client. Registers as global SNDAPI constructor.</p>
     </div>
     
 
@@ -124,7 +128,7 @@
 
             
 
-            <td class="description last">Options object
+            <td class="description last"><p>Options object</p>
                 <h6>Properties</h6>
                 
 
@@ -178,7 +182,7 @@
 
             
 
-            <td class="description last">Interval of signature refresh, defaults to 30 minutes</td>
+            <td class="description last"><p>Interval of signature refresh, defaults to 30 minutes</p></td>
         </tr>
 
 	
@@ -211,7 +215,7 @@
 
             
 
-            <td class="description last">URL for the signature service</td>
+            <td class="description last"><p>URL for the signature service</p></td>
         </tr>
 
 	
@@ -244,7 +248,7 @@
 
             
 
-            <td class="description last">Common prefix for all URLs called later by the API (you can use partial URLs later)</td>
+            <td class="description last"><p>Common prefix for all URLs called later by the API (you can use partial URLs later)</p></td>
         </tr>
 
 	
@@ -275,7 +279,7 @@
 
             
 
-            <td class="description last">API key of your client</td>
+            <td class="description last"><p>API key of your client</p></td>
         </tr>
 
 	
@@ -314,7 +318,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="sndapi.js.html">C:/Users/ikari/code/sndapi-js/src/sndapi.js</a>
+        <a href="sndapi.js.html">C:/work/code/sndapi-js/src/sndapi.js</a>, <a href="sndapi.js.html#sunlight-1-line-136">line 136</a>
     </li></ul></dd>
     
 
@@ -349,6 +353,13 @@
     
 
     
+        <h3 class="subsection-title">Classes</h3>
+
+        <dl>
+            <dt><a href="SNDAPI_SchoenfinkelizedResult.html">SchoenfinkelizedResult</a></dt>
+            <dd></dd>
+        </dl>
+    
 
     
 
@@ -360,7 +371,7 @@
         <dl>
             
 <dt>
-    <h4 class="name" id="ajax"><span class="type-signature"></span>ajax<span class="signature">(options)</span><span class="type-signature"> &rarr; {SchönfinkelizedResult}</span></h4>
+    <h4 class="name" id="ajax"><span class="type-signature"></span>ajax<span class="signature">(options)</span><span class="type-signature"> &rarr; {SchoenfinkelizedResult}</span></h4>
     
     
 </dt>
@@ -368,7 +379,7 @@
     
     
     <div class="description">
-        Make an AJAX call for any data
+        <p>Make an AJAX call for any data</p>
     </div>
     
 
@@ -418,7 +429,7 @@
 
             
 
-            <td class="description last">request parameters
+            <td class="description last"><p>request parameters</p>
                 <h6>Properties</h6>
                 
 
@@ -476,7 +487,7 @@
                 </td>
             
 
-            <td class="description last">request URL, will be prefixed with prefixUrl passed to constructor if relative</td>
+            <td class="description last"><p>request URL, will be prefixed with prefixUrl passed to constructor if relative</p></td>
         </tr>
 
 	
@@ -513,7 +524,7 @@
                 </td>
             
 
-            <td class="description last">data that will be sent as POST body</td>
+            <td class="description last"><p>data that will be sent as POST body</p></td>
         </tr>
 
 	
@@ -547,7 +558,8 @@
                 </td>
             
 
-            <td class="description last">(boolean) do we want to add header asking politely for JSON content-type?</td>
+            <td class="description last"><p>(boolean) do we want to add header asking politely for JSON content-type?
+         It will be parsed automatically, if valid.</p></td>
         </tr>
 
 	
@@ -586,7 +598,7 @@
                 </td>
             
 
-            <td class="description last">sign this request with the x-snd-apisignature header</td>
+            <td class="description last"><p>sign this request with the x-snd-apisignature header</p></td>
         </tr>
 
 	
@@ -625,7 +637,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="sndapi.js.html">C:/Users/ikari/code/sndapi-js/src/sndapi.js</a>
+        <a href="sndapi.js.html">C:/work/code/sndapi-js/src/sndapi.js</a>, <a href="sndapi.js.html#sunlight-1-line-248">line 248</a>
     </li></ul></dd>
     
 
@@ -650,7 +662,7 @@
     
             
 <div class="param-desc">
-    a promise
+    <p>a promise</p>
 </div>
 
 
@@ -661,7 +673,7 @@
 	</dt>
 	<dd>
 		
-<span class="param-type">SchönfinkelizedResult</span>
+<span class="param-type">SchoenfinkelizedResult</span>
 
 
 	</dd>
@@ -684,7 +696,7 @@
     
     
     <div class="description">
-        Fetches an object representing the current state of the library.
+        <p>Fetches an object representing the current state of the library.</p>
     </div>
     
 
@@ -717,7 +729,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="sndapi.js.html">C:/Users/ikari/code/sndapi-js/src/sndapi.js</a>
+        <a href="sndapi.js.html">C:/work/code/sndapi-js/src/sndapi.js</a>, <a href="sndapi.js.html#sunlight-1-line-158">line 158</a>
     </li></ul></dd>
     
 
@@ -772,7 +784,7 @@
     
     
     <div class="description">
-        initializes the SND API and fetches a new token from the server
+        <p>initializes the SND API and fetches a new token from the server</p>
     </div>
     
 
@@ -805,7 +817,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="sndapi.js.html">C:/Users/ikari/code/sndapi-js/src/sndapi.js</a>
+        <a href="sndapi.js.html">C:/work/code/sndapi-js/src/sndapi.js</a>, <a href="sndapi.js.html#sunlight-1-line-176">line 176</a>
     </li></ul></dd>
     
 
@@ -851,7 +863,7 @@
 					
 		<span class="jsdoc-message">
 		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha5</a>
-		on Mon Apr 14 2014 10:38:36 GMT+0200 (Central European Daylight Time) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
+		on Tue Apr 15 2014 16:03:08 GMT+0200 (Central European Daylight Time) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
 		</span>
 				</footer>
 			</div>
@@ -877,7 +889,7 @@
 	<script src="scripts/toc.js"></script>
 
 
-	<script>  Sunlight.highlightAll({lineNumbers:,  showMenu: true, enableDoclinks :true}); </script>
+	<script>  Sunlight.highlightAll({lineNumbers:true,  showMenu: true, enableDoclinks :true}); </script>
 
 	<script>
 		$( function () {

@@ -11,7 +11,7 @@ Installation
 
 You can either:
 * include the JavaScript file before you use it with a `script` tag or
-* (SOON, not yet in the registry) install it as a [bower](http://bower.io/) package
+* (SOON, not yet in the registry, our TL "forgets" to open the repository) install it as a [bower](http://bower.io/) package
 
 ### bower
 If you use `bower`, you can install this package providing the git repository URL:

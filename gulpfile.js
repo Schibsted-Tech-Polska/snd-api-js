@@ -50,16 +50,24 @@ gulp.task('scripts', function() {
 
 // Update JSDoc files
 gulp.task('jsdoc', function() {
-    gulp.src(paths.scripts)
+    gulp.src(paths.scripts.concat(['README.md']))
         .pipe(jsdoc(paths.docs, {
-            path : 'ink-docstrap',
-            theme: 'cerulean'
+            path    : 'ink-docstrap',
+            theme   : 'spacelab',
+            linenums: true
+        }, {
+            // infos
+            plugins: ['plugins/markdown']
+        }, {
+            // options
+            "private"  : true,
+            cleverLinks: true
         }));
 });
 
 // Rerun the task when a file changes
 gulp.task('watch', function() {
-    gulp.watch(paths.scripts, ['scripts']);
+    gulp.watch(paths.scripts, ['scripts', 'jsdoc']);
 });
 
 // run QUnit tests

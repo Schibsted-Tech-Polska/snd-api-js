@@ -11,7 +11,7 @@
 	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
 
 	
-	<link type="text/css" rel="stylesheet" href="styles/site.cerulean.css">
+	<link type="text/css" rel="stylesheet" href="styles/site.spacelab.css">
 	
 </head>
 
@@ -30,6 +30,10 @@
 						
 						<li>
 							<a href="SNDAPI.html">SNDAPI</a>
+						</li>
+						
+						<li>
+							<a href="SNDAPI_SchoenfinkelizedResult.html">SchoenfinkelizedResult</a>
 						</li>
 						
 
@@ -72,6 +76,69 @@
 
 
 
+    <section>
+        <article><h1 id="snd-api-js-">snd-api-js </h1>
+<p><code>sndapi.js</code> is Schibsted Norge Digital news API utility library to access the API from JavaScript. It manages the tokens thrown back and forth for authorization of the requests.</p>
+<p>It is lightweight (only 3.4 KiB when minified, 1.8 KiB to download!) and very simple to use (construct, init, ajax!). It has no external dependencies and requires CORS-aware browser — consult <a href="http://caniuse.com/cors">http://caniuse.com/cors</a> if in doubt.</p>
+<h2 id="installation">Installation</h2>
+<p>You can either:</p>
+<ul>
+<li>include the JavaScript file before you use it with a <code>script</code> tag or</li>
+<li>(SOON, not yet in the registry, our TL &quot;forgets&quot; to open the repository) install it as a <a href="http://bower.io/">bower</a> package</li>
+</ul>
+<h3 id="bower">bower</h3>
+<p>If you use <code>bower</code>, you can install this package providing the git repository URL:</p>
+<pre><code>git@bitbucket.org:schibstednorge/snd-api-js.git
+</code></pre><p>It should include the minified output file and some documentation in your <code>bower_components</code> directory:</p>
+<pre><code class="lang-bash">    ➜  your_project $  tree bower_components -L 2
+    bower_components
+    `-- snd-api-js
+        |-- README.md
+        |-- bower.json
+        |-- docs
+        `-- sndapi.min.js
+</code></pre>
+<h2 id="usage">Usage</h2>
+<p>Then, in your code, you create an instance of SNDAPI object (providing at least your API client id key, for more options refer to the JSDoc in <code>docs</code> directory), initialize it and there make AJAX calls in a familiar way:</p>
+<pre><code class="lang-js">    var api = new SNDAPI({
+        key: &quot;your123secret789key&quot; // also known as client ID in some docs.
+    });
+    api.init(); // you can also attach .success and .fail here
+    api.ajax({ url: &quot;publication/common/sections/1/auto&quot; })
+        .success(function(data, statusDetails) {
+            console.log(&quot;HTTP response code: &quot; + statusDetails.statusCode);
+            console.log(&quot;HTTP status text:   &quot; + statusDetails.statusText);
+            ok(data === statusDetails.response);
+            ok(data, &quot;data received&quot;);
+        })
+        .fail(function(statusDetails) {
+            console.error(&quot;request failed&quot;);
+            console.error(&quot;Response code: &quot; + statusDetails.statusCode);
+        });
+</code></pre>
+<h2 id="more-documentation">More documentation</h2>
+<p>JSDoc is generated with <code>gulp-jsdoc</code> and can be viewed in the <code>docs/SNDAPI.html</code>. Because of most git repo viewers&#39;
+security limitations, it&#39;s best viewed offline, from your hard disk.</p>
+<h2 id="contributing-and-building">Contributing and building</h2>
+<p><code>npm</code> and <code>gulp</code> are required to build this project. Then just run</p>
+<pre><code>gulp
+</code></pre><p>and the <code>build/sndapi.min.js</code> file should be updated (and the tests run, and the filesystem watched for changes).
+If you don&#39;t want waching for changes and want to build+test only once, use <code>gulp once</code>.</p>
+<p>We use semantic versioning which is made easy with the following commands:</p>
+<pre><code>gulp patch # after you patched a bug in a backwards-compatible manner
+gulp feature # after you added a new feature that doesn&#39;t break backward-compatibility, bumps minor version
+gulp release # after you created a new backwards-incompatible release, bumps major version number
+</code></pre><p>These will bump the version both in <code>package.json</code> and <code>bower.json</code>, tag the repository and push the tags.
+The commands are more documented in the gulpfile.</p>
+<h2 id="testing">Testing</h2>
+<p>That&#39;s under development. You can simply run <code>gulp test</code> or <code>npm test</code> now, but it doesn&#39;t finish the process automatically yet. Tests are written for QUnit and placed in <code>sndapi-test.js</code> file.</p>
+<p>Unfortunately right now the <code>gulp-qunit</code> plugin didn&#39;t seem to accept a HTTP protocol URL as the argument, only a local file, and when it uses a local file, its PhantomJS doesn&#39;t resolve other local files referenced by just <code>src=&quot;qunit.js&quot;</code> and such  (though might be fixed by <a href="https://github.com/jonkemp/gulp-qunit/pull/8">gulp-qunit pull request #8</a>). Therefore we start an Express server that hosts the test files and provides simple mock responses that the real API server should return. The tests will be changed to use this server instead of the real one (that does not work, he he).</p>
+<p>To serve everything that&#39;s required and run the tests, run:</p>
+<pre><code>    gulp test
+</code></pre><p>It will use port 8081 for serving content to PhantomJS with QUnit.</p>
+</article>
+    </section>
+
 
 
 
@@ -86,7 +153,7 @@
 					
 		<span class="jsdoc-message">
 		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha5</a>
-		on Mon Apr 14 2014 10:38:36 GMT+0200 (Central European Daylight Time) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
+		on Tue Apr 15 2014 16:03:08 GMT+0200 (Central European Daylight Time) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
 		</span>
 				</footer>
 			</div>
@@ -112,7 +179,7 @@
 	<script src="scripts/toc.js"></script>
 
 
-	<script>  Sunlight.highlightAll({lineNumbers:,  showMenu: true, enableDoclinks :true}); </script>
+	<script>  Sunlight.highlightAll({lineNumbers:true,  showMenu: true, enableDoclinks :true}); </script>
 
 	<script>
 		$( function () {

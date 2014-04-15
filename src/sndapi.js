@@ -1,16 +1,16 @@
-/*
- * This file is library/framework independent. No runtime dependencies.
- * If JSON is defined, responses sent with mime type application/json will be parsed automatically.
- */
-
 /*global global,ActiveXObject */
 //noinspection ThisExpressionReferencesGlobalObjectJS
-/**
- * @namespace
- */
 (function(global) {
     "use strict";
 
+    /**
+     * Creates a new SchoenfinkelizedResult object with empty callback lists and unresolved state.
+     * @constructor
+     * @memberOf SNDAPI.prototype
+     * @classdesc This represents a result in form of a promise, that you can _curry_
+     * (or _schönfinkelize_, hence the name) to attach as many handlers as you need and when you need them.
+     * @returns {SchoenfinkelizedResult}
+     */
     function SchoenfinkelizedResult() {
         if (!(this instanceof  SchoenfinkelizedResult)) {
             return new SchoenfinkelizedResult();
@@ -25,9 +25,10 @@
     }
 
     /**
-     * Add success callback to the AJAX call
-     * @param callback
-     * @returns {*}
+     * Add success callback to the AJAX call.
+
+     * @param callback {function} This will be called if the request completes successfully
+     * @returns {SchoenfinkelizedResult} self.
      */
     SchoenfinkelizedResult.prototype.success = function(callback) {
         this._onSuccess.push(callback);
@@ -36,9 +37,10 @@
     };
 
     /**
-     * Add fail (error) callback to the AJAX call
-     * @param callback
-     * @returns {*}
+     * Add fail (error/timeout) callback to the AJAX call
+     *
+     * @param callback {function} This will be called if the request fails
+     * @returns {SchoenfinkelizedResult} self.
      */
     SchoenfinkelizedResult.prototype.fail = function(callback) {
         this._onError.push(callback);
@@ -46,6 +48,11 @@
         return this;
     };
 
+    /**
+     * Used by the library to resolve the promise with a successful result
+     * @param {...object} all parameters will be passed to success listeners
+     * @returns {SchoenfinkelizedResult} self.
+     */
     SchoenfinkelizedResult.prototype.resolve = function() {
         var cb, args = this._resolution || arguments;
         this._state = 1;
@@ -56,6 +63,11 @@
         return this;
     };
 
+    /**
+     * Used by the library to resolve the promise with an unsuccessful result
+     * @param {...object} all parameters will be passed to fail listeners
+     * @returns {SchoenfinkelizedResult} self.
+     */
     SchoenfinkelizedResult.prototype.reject = function() {
         var cb, args = this._resolution || arguments;
         this._state = 2;
@@ -66,6 +78,21 @@
         return this;
     };
 
+    /**
+     * Used internally. Delegates the responsibilities to another SchoenfinkelizedResult.
+     *
+     * We are using this when the operation is not done immediately, but instead
+     * queued for later (when we have a valid token). We must reuse the handlers
+     * that are *and will be (in the future)* attached to the original result to
+     * fire them, when the new, internally called with .ajax again, operation ends.
+     *
+     * What it actually does is take the other listener array *references*
+     * and plug them in here, concatenating all listeners.
+     *
+     * @param otherResult
+     * @internal
+     * @returns {SchoenfinkelizedResult} self.
+     */
     SchoenfinkelizedResult.prototype.handleWith = function(otherResult) {
         this._onSuccess.forEach(function(item) { otherResult._onSuccess.push(item); });
         this._onError.forEach(function(item) { otherResult._onError.push(item); });
@@ -75,6 +102,12 @@
         return this;
     };
 
+    /**
+     * If the promise was resolved before (either good or bad way, whatever),
+     * fire the appropriate, late-defined callbacks!
+     *
+     * @private
+     */
     SchoenfinkelizedResult.prototype._refire = function() {
         if (this._state > 0) {
             // we know the outcome
@@ -89,9 +122,9 @@
     };
 
 
-
-        /**
+    /**
      * Public API of the SND news API client. Registers as global SNDAPI constructor.
+     * @global
      * @constructor
      * @alias SNDAPI
      * @param options {object} Options object
@@ -206,6 +239,7 @@
          * @param options.url {object} request URL, will be prefixed with prefixUrl passed to constructor if relative
          * @param options.postData {object?} data that will be sent as POST body
          * @param [options.preferJSON=true] (boolean) do we want to add header asking politely for JSON content-type?
+         *          It will be parsed automatically, if valid.
          * @param [options.sign=true] {boolean} sign this request with the x-snd-apisignature header
          * @memberOf SNDAPI
          * @instance
@@ -334,6 +368,7 @@
 
         return publicApi;
     };
+    global.SNDAPI.prototype.SchoenfinkelizedResult = SchoenfinkelizedResult;
 
 })(typeof global === "object" ? global : this);
 
