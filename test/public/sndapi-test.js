@@ -4,24 +4,30 @@
 
     var key = "afLKmZNSMrZybha2zsp9YNhB",
         mode = "local",
+        options = {},
         apiFactory = function(mode) {
             switch (mode) {
                 case "local":
-                    return new SNDAPI({
+                    options = {
                         key                : key,
                         signatureServiceUrl: "http://localhost:8081/sts/signature",
                         prefixUrl          : "http://127.0.0.1:8081/news/v2/"
-                    });
+                    };
+                    return new SNDAPI(options);
                 case "beta":
-                    return  new SNDAPI({
+                    options = {
                         key                : key,
                         signatureServiceUrl: "http://apitestbeta3.medianorge.no/sts/signature",
                         prefixUrl          : "http://apitestbeta3.medianorge.no/news/v2/"
-                    });
+                    };
+                    return  new SNDAPI(options);
                 case "production":
-                    return new SNDAPI({
-                        key: key
-                    });
+                    options = {
+                        key                : key,
+                        signatureServiceUrl: "//api.snd.no/sts/signature",
+                        prefixUrl          : "//api.snd.no/news/v2/"
+                    };
+                    return new SNDAPI(options);
             }
             throw new Error("unknown mode, use 'local', 'beta' or 'production', ok?");
         },
@@ -91,33 +97,40 @@
         api.init();
     });
 
-    asyncTest("requests without protocol specified prepend prefix", function() {
+    asyncTest("requests correctly assume protocol", function() {
         var xhr = this.sandbox.useFakeXMLHttpRequest();
-        var requests = this.requests = [];
-        var that = this;
+        var req;
+        this.clock.restore();
 
-        xhr.onCreate = function(request) {
-            requests.push(request);
-        };
-
-        //var callback = this.spy();
-        console.log(xhr);
-        api.ajax({ url: "publication/common/sections/1/auto" })
-            .success(check)
-            .fail(check);
-
-        function check() {
-            console.error(that.requests);
-
-            equal(1, that.requests.length);
-
-            requests[0].respond(200, { "Content-Type": "application/json" },
-                '[{ id: 12, comment: "Hey there" }]');
-            //ok(callback.calledWith([{ id: 12, comment: "Hey there" }]));
-            //ok(callback.called());
-            ok(true, 'yay');
-            xhr.restore();
-            start();
+        function getLastRequest() {
+            return xhr.requests.pop();
         }
+
+        api.ajax({ url: "a/b/c" });
+        req = getLastRequest();
+        ok(req.url.indexOf(options.prefixUrl) === 0, 'it prepends prefixUrl (url starts with a letter)');
+
+        api.ajax({ url: "/a/b/c" });
+        req = getLastRequest();
+        ok(req.url.indexOf(options.prefixUrl) === 0, 'it prepends prefixUrl (url starts with /)');
+
+        api.ajax({ url: "//a/b/c" });
+        req = getLastRequest();
+        ok(req.url.indexOf('//') === 0, 'it leaves //a/b/c alone');
+
+        api.ajax({ url: "http://a/b/c" });
+        req = getLastRequest();
+        ok(req.url.indexOf('http://') === 0, 'it leaves http://a/b/c alone');
+
+        api.ajax({ url: "https://a/b/c" });
+        req = getLastRequest();
+        ok(req.url.indexOf('https://') === 0, 'it leaves http://a/b/c alone');
+
+        api.ajax({ url: "myinvention://a/b/c" });
+        req = getLastRequest();
+        ok(req.url.indexOf('myinvention://') === 0, 'it leaves myinvention://a/b/c alone');
+
+        xhr.restore();
+        start();
     });
 })();
