@@ -1,14 +1,10 @@
-/*global global,ActiveXObject */
-//noinspection ThisExpressionReferencesGlobalObjectJS
 /*
- * Schibsted Norge Digital API client helper library.
- *
  * This file is library/framework independent. No runtime dependencies.
-
  * If JSON is defined, responses sent with mime type application/json will be parsed automatically.
  */
 
-// wrapper for global
+/*global global,ActiveXObject */
+//noinspection ThisExpressionReferencesGlobalObjectJS
 /**
  * @namespace
  */
@@ -213,7 +209,7 @@
          * @param [options.sign=true] {boolean} sign this request with the x-snd-apisignature header
          * @memberOf SNDAPI
          * @instance
-         * @returns {SchönfinkelizedResult} a promise
+         * @returns {SchoenfinkelizedResult} a promise
          */
         function ajax(options) {
             var requestOptions = mergeOptions({

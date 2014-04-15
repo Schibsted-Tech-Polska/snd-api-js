@@ -4,6 +4,7 @@
 // dependencies
 var gulp = require('gulp'),
     bump = require('gulp-bump'),
+    header = require('gulp-header'),
     filter = require('gulp-filter'),
     test_server = require('./test/server.js'),
     uglify = require('gulp-uglify'),
@@ -15,19 +16,35 @@ var gulp = require('gulp'),
 
 // config
 var paths = {
-    scripts       : ['src/*.js'],
-    versionToBump : ['./package.json', './bower.json'],
-    versionToCheck: './package.json',
-    dest          : './',
-    docs          : './docs',
-    distFile      : 'sndapi.min.js'
-};
+        scripts       : ['src/*.js'],
+        versionToBump : ['./package.json', './bower.json'],
+        versionToCheck: './package.json',
+        dest          : './',
+        docs          : './docs',
+        distFile      : 'sndapi.min.js'
+    },
+    banner = ['/**',
+              ' * <%= pkg.name %> - <%= pkg.description %>',
+              ' * @version v<%= pkg.version %>',
+              ' * @link <%= pkg.homepage %>',
+              ' * @license <%= pkg.license %>',
+              ' */',
+              ''].join('\n');
 
 // Minify, concatenate and do all the magic with JS files
 gulp.task('scripts', function() {
+    var pkg = require('./package.json');
+
+    // minified
     gulp.src(paths.scripts)
         .pipe(uglify())
         .pipe(concat(paths.distFile))
+        .pipe(header(banner, { pkg: pkg }))
+        .pipe(gulp.dest(paths.dest));
+
+    // unminified
+    gulp.src(paths.scripts)
+        .pipe(header(banner, { pkg: pkg }))
         .pipe(gulp.dest(paths.dest));
 });
 
@@ -46,7 +63,7 @@ gulp.task('watch', function() {
 });
 
 // run QUnit tests
-gulp.task('test', ['serve'], function() {
+gulp.task('run-tests', ['serve'], function() {
     return gulp.src('./test/public/index.html')
         .pipe(qunit());
 });
@@ -56,8 +73,8 @@ gulp.task('serve', function() {
     test_server.start();
 });
 
-// stop the local server (files + mock API) for tests
-gulp.task('unserve', ['serve', 'test'], function() {
+// start local server, run tests, stop local server
+gulp.task('test', ['serve', 'run-tests'], function() {
     test_server.stop();
 });
 
@@ -98,4 +115,4 @@ gulp.task('tag', function() {
 // by default: build, test, update docs, watch
 // run 'once' to not watch :)
 gulp.task('default', ['once', 'watch' ]);
-gulp.task('once', ['scripts', 'serve', 'test', 'unserve', 'jsdoc' ]);
+gulp.task('once', ['scripts', 'test', 'jsdoc' ]);

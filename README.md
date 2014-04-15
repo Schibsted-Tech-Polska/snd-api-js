@@ -1,9 +1,9 @@
 snd-api-js 
 ==========
 
-`sndapi.js` is Schibsted Norge Digital API utility library to access the API from JavaScript. It manages the tokens thrown back and forth for authorization of the requests.
+`sndapi.js` is Schibsted Norge Digital news API utility library to access the API from JavaScript. It manages the tokens thrown back and forth for authorization of the requests.
 
-It is lightweight (only 2.3 KiB when minified, 1.6 KiB to download!) and very simple to use (construct, init, ajax!). It has no external dependencies and requires CORS-aware browser — consult http://caniuse.com/cors if in doubt.
+It is lightweight (only 3.4 KiB when minified, 1.8 KiB to download!) and very simple to use (construct, init, ajax!). It has no external dependencies and requires CORS-aware browser — consult http://caniuse.com/cors if in doubt.
 
 
 Installation
@@ -20,6 +20,7 @@ If you use `bower`, you can install this package providing the git repository UR
 
 It should include the minified output file and some documentation in your `bower_components` directory:
 
+```bash
     ➜  your_project $  tree bower_components -L 2
     bower_components
     `-- snd-api-js
@@ -27,13 +28,14 @@ It should include the minified output file and some documentation in your `bower
         |-- bower.json
         |-- docs
         `-- sndapi.min.js
-
+```
 
 Usage
 -----
 
 Then, in your code, you create an instance of SNDAPI object (providing at least your API client id key, for more options refer to the JSDoc in `docs` directory), initialize it and there make AJAX calls in a familiar way:
 
+```js
 	var api = new SNDAPI({
         key: "your123secret789key" // also known as client ID in some docs.
     });
@@ -49,6 +51,7 @@ Then, in your code, you create an instance of SNDAPI object (providing at least 
 	        console.error("request failed");
 	        console.error("Response code: " + statusDetails.statusCode);
 	    });
+```
 
 More documentation
 ------------------
