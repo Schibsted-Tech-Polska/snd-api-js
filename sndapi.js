@@ -4,21 +4,15 @@
  * @link https://bitbucket.org/schibstednorge/snd-api-js
  * @license BSD-2-Clause
  */
-/*
- * This file is library/framework independent. No runtime dependencies.
- * If JSON is defined, responses sent with mime type application/json will be parsed automatically.
- */
-
 /*global global,ActiveXObject */
 //noinspection ThisExpressionReferencesGlobalObjectJS
-
 (function(global) {
     "use strict";
 
     /**
      * Creates a new SchoenfinkelizedResult object with empty callback lists and unresolved state.
      * @constructor
-     * @alias SchoenfinkelizedResult
+     * @memberOf SNDAPI.prototype
      * @classdesc This represents a result in form of a promise, that you can _curry_
      * (or _schönfinkelize_, hence the name) to attach as many handlers as you need and when you need them.
      * @returns {SchoenfinkelizedResult}
@@ -40,9 +34,7 @@
      * Add success callback to the AJAX call.
 
      * @param callback {function} This will be called if the request completes successfully
-     * @memberOf SchoenfinkelizedResult
      * @returns {SchoenfinkelizedResult} self.
-     * @public
      */
     SchoenfinkelizedResult.prototype.success = function(callback) {
         this._onSuccess.push(callback);
@@ -250,10 +242,12 @@
         /**
          * Make an AJAX call for any data
          * @param options {object} request parameters
-         * @param options.url {object} request URL, will be prefixed with prefixUrl passed to constructor if relative
+         * @param options.url {string} request URL, will be prefixed with prefixUrl passed to constructor if relative
          * @param options.postData {object?} data that will be sent as POST body
          * @param [options.preferJSON=true] (boolean) do we want to add header asking politely for JSON content-type?
+         *          It will be parsed automatically, if valid.
          * @param [options.sign=true] {boolean} sign this request with the x-snd-apisignature header
+         * @param [options.timeout=30e3] {number} if request doesn't respond within this many milliseconds, fail.
          * @memberOf SNDAPI
          * @instance
          * @returns {SchoenfinkelizedResult} a promise
@@ -261,10 +255,12 @@
         function ajax(options) {
             var requestOptions = mergeOptions({
                     // the defaults:
+                    async     : true,
                     url       : null,
                     postData  : null,
                     preferJSON: true,
-                    sign      : true
+                    sign      : true,
+                    timeout   : 30e3
                 }, options),
                 req = createXMLHTTPObject(),
                 method = (requestOptions.postData) ? "POST" : "GET",
@@ -283,6 +279,7 @@
 
 
             function resolve() {
+                clearTimeout(req._timeouter);
                 if (status === "success") {
                     return result.resolve(statusDetails.response, statusDetails);
                 } else {
@@ -297,6 +294,16 @@
             }
             result.req = req; // publish the object, why not
 
+            // no matter if we're going to queue or not, timeout should start now
+            req._timeouter = setTimeout(function() {
+                status = "fail";
+                statusDetails = {
+                    statusCode: -1,
+                    statusText: "Request timed out",
+                    response  : null
+                };
+                result.reject(statusDetails);
+            }, requestOptions.timeout);
 
             // queue if we are not ready
             if (!state.token && requestOptions.sign) {
@@ -309,7 +316,7 @@
 
 
             // otherwise make the request
-            req.open(method, requestOptions.url, true);
+            req.open(method, requestOptions.url, requestOptions.async);
 
             // no idea why this was in stackOverflow code
             // req.setRequestHeader('User-Agent', 'XMLHTTP/1.0');
@@ -381,6 +388,7 @@
 
         return publicApi;
     };
+    global.SNDAPI.prototype.SchoenfinkelizedResult = SchoenfinkelizedResult;
 
 })(typeof global === "object" ? global : this);
 

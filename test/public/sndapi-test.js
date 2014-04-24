@@ -47,14 +47,25 @@
     });
 
     asyncTest("we get a token", function(assert) {
+        var retries = 0,
+            timer = null;
         expect(1);
+
         function check() {
+            // ok, we do an awful lot of logging here
+            // because this test works in the browser
+            // but times out in the phantomjs runner :((
+            // (check() is never ran again)
+            console.log("Check running");
+            console.log(check);
             if (api.getState().tokenIsSet) {
                 assert.ok(true, "token set");
+                console.log("All is good");
                 start();
                 return;
             }
-            setTimeout(check, 100);
+            timer = setTimeout(check, 100);
+            console.log('retry ' + (++retries));
         }
 
         check();
@@ -133,4 +144,34 @@
         xhr.restore();
         start();
     });
+
+    test("request will timeout", function(assert) {
+        var xhr = this.sandbox.useFakeXMLHttpRequest();
+        var clock = this.sandbox.useFakeTimers();
+
+        var success = sinon.spy();
+        var fail = sinon.spy();
+        api.ajax({ url: "a/b/c", timeout:150 }).success(success).fail(fail);
+        assert.ok(success.notCalled, "success not called immediately");
+        assert.ok(fail.notCalled, "fail not called immediately");
+        clock.tick(100);
+        assert.ok(success.notCalled, "success not called after 100ms");
+        assert.ok(fail.notCalled, "fail not called after 100ms");
+        clock.tick(100);
+        assert.ok(success.notCalled, "success not called after 200ms");
+        assert.ok(fail.called, "fail CALLED after 200ms");
+
+
+        api.ajax({ url: "a/b/c/d" }).success(success).fail(fail);
+        assert.ok(success.notCalled, "default timeout: success not called immediately");
+        assert.ok(fail.notCalled, "default timeout: fail not called immediately");
+        clock.tick(10e3);
+        assert.ok(success.notCalled, "success not called after 10s");
+        assert.ok(fail.called, "fail CALLED after 10s");
+
+
+        clock.restore();
+        xhr.restore();
+    });
+
 })();
