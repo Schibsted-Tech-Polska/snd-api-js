@@ -1,6 +1,6 @@
 /**
  * sndapi-js - SND  news API client library to access the API from JavaScript
- * @version v0.3.6
+ * @version v0.4.0
  * @link https://bitbucket.org/schibstednorge/snd-api-js
  * @license BSD-2-Clause
  */
@@ -247,6 +247,7 @@
          * @param [options.preferJSON=true] (boolean) do we want to add header asking politely for JSON content-type?
          *          It will be parsed automatically, if valid.
          * @param [options.sign=true] {boolean} sign this request with the x-snd-apisignature header
+         * @param [options.async=true] {boolean} make this request asynchronous (non-blocking)
          * @param [options.timeout=30e3] {number} if request doesn't respond within this many milliseconds, fail.
          * @memberOf SNDAPI
          * @instance
