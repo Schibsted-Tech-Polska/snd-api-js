@@ -1,4 +1,4 @@
-/*global QUnit,console,SNDAPI,test,module,asyncTest,start,expect,equal,ok*/
+/*global QUnit,console,SNDAPI,test,module,asyncTest,start,expect,equal,ok,sinon*/
 (function() {
     "use strict";
 
@@ -162,16 +162,34 @@
         assert.ok(fail.called, "fail CALLED after 200ms");
 
 
+
+        success= sinon.spy();
+        fail = sinon.spy();
         api.ajax({ url: "a/b/c/d" }).success(success).fail(fail);
         assert.ok(success.notCalled, "default timeout: success not called immediately");
         assert.ok(fail.notCalled, "default timeout: fail not called immediately");
-        clock.tick(10e3);
-        assert.ok(success.notCalled, "success not called after 10s");
-        assert.ok(fail.called, "fail CALLED after 10s");
+        clock.tick(90e3 + 5);
+        assert.ok(success.notCalled, "success not called after 90s");
+        assert.ok(fail.called, "fail CALLED after 90s");
 
 
         clock.restore();
         xhr.restore();
+    });
+
+    test("request can be synchronous or not", function(assert) {
+        var success, fail;
+        success= sinon.spy();
+        fail = sinon.spy();
+
+        api.ajax({ url: "a/b/c", timeout:100 }).success(success).fail(fail);
+        assert.ok(success.notCalled && fail.notCalled, "not resolved at this point");
+
+        success = sinon.spy();
+        fail = sinon.spy();
+        api.ajax({ url: "http://google.pl/a/b/c", timeout:100, async:false }).success(success).fail(fail);
+        assert.ok(success.called || fail.called, "resolved (" + (fail.called ? 'failed' : 'successfully') + ") right after .ajax called");
+
     });
 
 })();

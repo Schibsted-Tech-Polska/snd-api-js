@@ -358,7 +358,19 @@
                 if (global.console) {global.console.warn("I did not expect to get here");}
                 return null;
             }
-            req.send(requestOptions.postData);
+
+            try {
+                req.send(requestOptions.postData);
+            } catch (e) {
+                // sync/immediate error handling
+                status = "fail";
+                statusDetails = {
+                    statusCode: e.code || 0,
+                    statusText: e.message || "Error caught when trying to send request",
+                    response  : e
+                };
+                resolve();
+            }
 
             return result;
         }
