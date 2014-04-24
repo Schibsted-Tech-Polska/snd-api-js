@@ -241,6 +241,7 @@
          * @param [options.preferJSON=true] (boolean) do we want to add header asking politely for JSON content-type?
          *          It will be parsed automatically, if valid.
          * @param [options.sign=true] {boolean} sign this request with the x-snd-apisignature header
+         * @param [options.async=true] {boolean} make this request asynchronous (non-blocking)
          * @param [options.timeout=30e3] {number} if request doesn't respond within this many milliseconds, fail.
          * @memberOf SNDAPI
          * @instance
