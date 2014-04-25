@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+</head>
+<body>
+<!--<script src="http://api.snd.no/sdk/js/v/0.4.0/sndapi.min.js"></script>-->
+<script src="src/sndapi.js"></script>
+<script>
+    console.log(new Date().getTime() + " before ajax");
+
+    var api = new SNDAPI({
+        signatureServiceUrl: "http://localhost:8081/sts/signature",
+        prefixUrl          : "http://127.0.0.1:8081/news/v2/",
+        key                : 'HQKxAMVqxlcsom3nuNgmpgFnQ'
+    });
+
+    api.init({async: false});
+
+    api.ajax({
+        url       : 'publication/ap/searchContents/instance?contentId=7241594&contentType=article',
+//url:'publication/ap/searchContents/tagged?tag=Grå økonomi',
+        preferJSON: true,
+        async     : false
+    }).success(function(response) {
+            console.log(new Date().getTime() + " success");
+        }).fail(function() {
+            console.log(new Date().getTime() + " fail");
+        });
+
+    console.log(new Date().getTime() + " after ajax");
+
+</script>
+</body>
+</html>

@@ -306,6 +306,15 @@ app.get('/news/v2/:publication/:something/:somethingelse/:someId/:somethingEvenM
     );
 });
 
+app.get('/slow/:anything', function(req, res) {
+    setTimeout(function() {
+        return res.send({
+            key: "value"
+        });
+    }, 2000);
+});
+
+
 function start() {
     server = app.listen(port);
 }

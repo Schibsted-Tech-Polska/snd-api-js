@@ -1,6 +1,6 @@
 /**
  * sndapi-js - SND  news API client library to access the API from JavaScript
- * @version v0.4.0
+ * @version v0.4.1
  * @link https://bitbucket.org/schibstednorge/snd-api-js
  * @license BSD-2-Clause
  */
@@ -176,27 +176,36 @@
 
         /**
          * initializes the SND API and fetches a new token from the server
+         * @param options {object} request parameters
+         * @param [options.async=true] {boolean} make init asynchronous (non-blocking)
          * @memberOf SNDAPI
          * @instance
          */
-        function init() {
+        function init(options) {
             if (!apiOptions.key) {
                 throw new Error("API key is required for SND API initalization");
             }
             if (state.tokenTimer) { clearInterval(state.tokenTimer); }
             state.tokenTimer = setInterval(refreshToken, apiOptions.refreshInterval);
-            return refreshToken();
+            return refreshToken(options);
         }
 
         /**
          * refreshes the token/signature contacting the signature service
+         * @param options {object} request parameters
+         * @param [options.async=true] {boolean} make this request asynchronous (non-blocking)
          * @returns {*}
          */
-        function refreshToken() {
-            return ajax({
+        function refreshToken(options) {
+            var requestOptions = mergeOptions({
+                // the defaults:
+                async     : true
+            }, options);
+            requestOptions = mergeOptions(requestOptions, {
                 sign: false,
                 url : apiOptions.signatureServiceUrl + "?api-key=" + apiOptions.key
-            })
+            });
+            return ajax(requestOptions)
                 .success(function(response, statusDetails) {
                     var request;
                     state.token = response.token;

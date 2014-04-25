@@ -50,17 +50,11 @@
         var retries = 0,
             timer = null;
         expect(1);
+        this.clock.restore(); // f*cking sinon
 
         function check() {
-            // ok, we do an awful lot of logging here
-            // because this test works in the browser
-            // but times out in the phantomjs runner :((
-            // (check() is never ran again)
-            console.log("Check running");
-            console.log(check);
             if (api.getState().tokenIsSet) {
                 assert.ok(true, "token set");
-                console.log("All is good");
                 start();
                 return;
             }
@@ -151,7 +145,7 @@
 
         var success = sinon.spy();
         var fail = sinon.spy();
-        api.ajax({ url: "a/b/c", timeout:150 }).success(success).fail(fail);
+        api.ajax({ url: "a/b/c", timeout: 150 }).success(success).fail(fail);
         assert.ok(success.notCalled, "success not called immediately");
         assert.ok(fail.notCalled, "fail not called immediately");
         clock.tick(100);
@@ -162,8 +156,7 @@
         assert.ok(fail.called, "fail CALLED after 200ms");
 
 
-
-        success= sinon.spy();
+        success = sinon.spy();
         fail = sinon.spy();
         api.ajax({ url: "a/b/c/d" }).success(success).fail(fail);
         assert.ok(success.notCalled, "default timeout: success not called immediately");
@@ -179,17 +172,35 @@
 
     test("request can be synchronous or not", function(assert) {
         var success, fail;
-        success= sinon.spy();
+        success = sinon.spy();
         fail = sinon.spy();
 
-        api.ajax({ url: "a/b/c", timeout:100 }).success(success).fail(fail);
+        api.ajax({ url: "a/b/c/d/e", timeout: 100 }).success(success).fail(fail);
         assert.ok(success.notCalled && fail.notCalled, "not resolved at this point");
 
         success = sinon.spy();
         fail = sinon.spy();
-        api.ajax({ url: "http://google.pl/a/b/c", timeout:100, async:false }).success(success).fail(fail);
-        assert.ok(success.called || fail.called, "resolved (" + (fail.called ? 'failed' : 'successfully') + ") right after .ajax called");
+        api.ajax({ url: "http://localhost:8081/slow/request", timeout: 100, async: false }).success(success).fail(fail);
+        assert.ok(success.called || fail.called,
+            "resolved (" + (fail.called ? 'failed' : 'successfully') + ") right after .ajax called");
 
+    });
+
+    test("init can be synchronous or not", function(assert) {
+        var api = apiFactory(mode);
+        var success = sinon.spy(),
+            fail = sinon.spy();
+
+        api.init({ async: false }).success(success).fail(fail);
+        assert.ok(success.called || fail.called,
+            "initialized synchronously (" + (fail.called ? 'failed' : 'successfully') + ")");
+
+        success = sinon.spy();
+        fail = sinon.spy();
+        api = apiFactory(mode);
+        api.init({ async: true }).success(success).fail(fail);
+        assert.ok(success.notCalled && fail.notCalled,
+            "initialized asynchronously (" + (fail.called ? 'failed' : 'successfully') + ")");
     });
 
 })();
