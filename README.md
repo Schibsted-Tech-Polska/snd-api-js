@@ -3,7 +3,7 @@ snd-api-js
 
 `sndapi.js` is Schibsted Norge Digital news API utility library to access the API from JavaScript. It manages the tokens thrown back and forth for authorization of the requests.
 
-It is lightweight (only 3.4 KiB when minified, 1.8 KiB to download!) and very simple to use (construct, init, ajax!). It has no external dependencies and requires CORS-aware browser — consult http://caniuse.com/cors if in doubt.
+It is lightweight (only 3.8 KiB when minified, 2.2 KiB to download!) and very simple to use (construct, init, ajax!). It has no external dependencies and requires CORS-aware browser — consult http://caniuse.com/cors if in doubt.
 
 
 Installation
@@ -11,7 +11,7 @@ Installation
 
 You can either:
 * include the JavaScript file before you use it with a `script` tag or
-* (SOON, not yet in the registry, our TL "forgets" to open the repository) install it as a [bower](http://bower.io/) package
+* (SOON, not yet in the registry) install it as a [bower](http://bower.io/) package
 
 ### bower
 If you use `bower`, you can install this package providing the git repository URL:
