@@ -1,6 +1,6 @@
 {
   "name": "sndapi-js",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "SND  news API client library to access the API from JavaScript",
   "homepage": "https://bitbucket.org/schibstednorge/snd-api-js",
   "main": "sndapi.min.js",

@@ -3,7 +3,7 @@ snd-api-js
 
 `sndapi.js` is Schibsted Norge Digital news API utility library to access the API from JavaScript. It manages the tokens thrown back and forth for authorization of the requests.
 
-It is lightweight (only 3.4 KiB when minified, 1.8 KiB to download!) and very simple to use (construct, init, ajax!). It has no external dependencies and requires CORS-aware browser — consult http://caniuse.com/cors if in doubt.
+It is lightweight (only 3.8 KiB when minified, 2.2 KiB to download!) and very simple to use (construct, init, ajax!). It has no external dependencies and requires CORS-aware browser — consult http://caniuse.com/cors if in doubt.
 
 
 Installation
@@ -11,12 +11,12 @@ Installation
 
 You can either:
 * include the JavaScript file before you use it with a `script` tag or
-* (SOON, not yet in the registry, our TL "forgets" to open the repository) install it as a [bower](http://bower.io/) package
+* install it as a [bower](http://bower.io/) package
 
 ### bower
-If you use `bower`, you can install this package providing the git repository URL:
+If you use `bower`, you can install this package via package name from bower registry:
 
-    git@bitbucket.org:schibstednorge/snd-api-js.git
+    bower install snd-api-js
 
 It should include the minified output file and some documentation in your `bower_components` directory:
 
@@ -27,6 +27,7 @@ It should include the minified output file and some documentation in your `bower
         |-- README.md
         |-- bower.json
         |-- docs
+        |-- sndapi.js
         `-- sndapi.min.js
 ```
 
@@ -39,7 +40,7 @@ Then, in your code, you create an instance of SNDAPI object (providing at least 
 	var api = new SNDAPI({
         key: "your123secret789key" // also known as client ID in some docs.
     });
-    api.init(); // you can also attach .success and .fail here
+    api.init(); // This makes a HTTP request! You can also attach .success and .fail here
 	api.ajax({ url: "publication/common/sections/1/auto" })
 	    .success(function(data, statusDetails) {
 	        console.log("HTTP response code: " + statusDetails.statusCode);
