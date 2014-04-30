@@ -11,12 +11,12 @@ Installation
 
 You can either:
 * include the JavaScript file before you use it with a `script` tag or
-* (SOON, not yet in the registry) install it as a [bower](http://bower.io/) package
+* install it as a [bower](http://bower.io/) package
 
 ### bower
-If you use `bower`, you can install this package providing the git repository URL:
+If you use `bower`, you can install this package via package name from bower registry:
 
-    git@bitbucket.org:schibstednorge/snd-api-js.git
+    bower install snd-api-js
 
 It should include the minified output file and some documentation in your `bower_components` directory:
 
@@ -39,7 +39,7 @@ Then, in your code, you create an instance of SNDAPI object (providing at least 
 	var api = new SNDAPI({
         key: "your123secret789key" // also known as client ID in some docs.
     });
-    api.init(); // you can also attach .success and .fail here
+    api.init(); // This makes a HTTP request! You can also attach .success and .fail here
 	api.ajax({ url: "publication/common/sections/1/auto" })
 	    .success(function(data, statusDetails) {
 	        console.log("HTTP response code: " + statusDetails.statusCode);
