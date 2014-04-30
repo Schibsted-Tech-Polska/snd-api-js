@@ -1,6 +1,6 @@
 /**
  * sndapi-js - SND  news API client library to access the API from JavaScript
- * @version v0.4.1
+ * @version v0.4.2
  * @link https://bitbucket.org/schibstednorge/snd-api-js
  * @license BSD-2-Clause
  */
@@ -332,7 +332,10 @@
             // req.setRequestHeader('User-Agent', 'XMLHTTP/1.0');
 
             // adding signature
-            if (state.token && requestOptions.sign) { req.setRequestHeader('X-Snd-Apisignature', state.token); }
+            if (state.token && requestOptions.sign) {
+                req.setRequestHeader('X-Snd-Apisignature', state.token);
+                req.setRequestHeader('X-Snd-Apikey', apiOptions.key);
+            }
             if (requestOptions.postData) { req.setRequestHeader('Content-type', 'application/x-www-form-urlencoded'); }
             if (requestOptions.preferJSON) {
                 req.setRequestHeader('Accept', 'application/json');
