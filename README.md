@@ -27,6 +27,7 @@ It should include the minified output file and some documentation in your `bower
         |-- README.md
         |-- bower.json
         |-- docs
+        |-- sndapi.js
         `-- sndapi.min.js
 ```
 
