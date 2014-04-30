@@ -13,7 +13,7 @@ var fs = require('fs'),
     allowCORS = function(req, res, next) {
         res.header("Access-Control-Allow-Origin", "*");
         res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS");
-        res.header("Access-Control-Allow-Headers", "Content-Type,Accept,accept,x-snd-apisignature");
+        res.header("Access-Control-Allow-Headers", "x-snd-apikey,x-snd-apisignature");
         if (req.method === "OPTIONS") {
             res.send(200);
         } else {
