@@ -1,7 +1,9 @@
 snd-api-js 
 ==========
 
-`sndapi.js` is Schibsted Norge Digital news API utility library to access the API from JavaScript. It manages the tokens thrown back and forth for authorization of the requests.
+`sndapi.js` is Schibsted Norge Digital news API *utility library* to access the API from JavaScript. It only manages the tokens thrown back and forth for authorization of the requests. If you are looking for a full-blown NewsClient SDK for JavaScript, you may want to try (work in progress) the [`snd-api-newsclient-js` project](https://bitbucket.org/schibstednorge/snd-api-newsclient-js).
+
+The name in probably misleading because of this, we know. Unforeseen project decisions.
 
 It is lightweight (only 3.8 KiB when minified, 2.2 KiB to download!) and very simple to use (construct, init, ajax!). It has no external dependencies and requires CORS-aware browser — consult http://caniuse.com/cors if in doubt.
 
