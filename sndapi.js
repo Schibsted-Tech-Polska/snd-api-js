@@ -1,6 +1,6 @@
 /**
  * sndapi-js - SND  news API client library to access the API from JavaScript
- * @version v0.4.2
+ * @version v0.4.3
  * @link https://bitbucket.org/schibstednorge/snd-api-js
  * @license BSD-2-Clause
  */
@@ -8,6 +8,7 @@
 //noinspection ThisExpressionReferencesGlobalObjectJS
 (function(global) {
     "use strict";
+
 
     /**
      * Creates a new SchoenfinkelizedResult object with empty callback lists and unresolved state.
@@ -129,7 +130,7 @@
 
 
     /**
-     * Public API of the SND news API client. Registers as global SNDAPI constructor.
+     * Call wrapper for signing the SND news API ajax request. Registers as global SNDAPI constructor.
      * @global
      * @constructor
      * @alias SNDAPI
@@ -183,7 +184,7 @@
          */
         function init(options) {
             if (!apiOptions.key) {
-                throw new Error("API key is required for SND API initalization");
+                throw new Error("API key is required for SND API initialization");
             }
             if (state.tokenTimer) { clearInterval(state.tokenTimer); }
             state.tokenTimer = setInterval(refreshToken, apiOptions.refreshInterval);
@@ -239,7 +240,7 @@
             }
             if (typeof given === "object") {
                 for (key in given) {
-                    if (hop.call(given, key)) {
+                    if (hop.call(given, key) && given[key] !== undefined) {
                         //noinspection JSUnfilteredForInLoop
                         result[key] = given[key];
                     }
