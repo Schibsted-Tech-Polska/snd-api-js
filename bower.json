@@ -4,7 +4,7 @@
   "authors": [
     "Cezar “ikari” Pokorski <git@ikari.pl>"
   ],
-  "description": "SND news API client helper library",
+  "description": "SND news API ajax call wrapper for the browser",
   "main": "sndapi.min.js",
   "moduleType": [
     "globals"
