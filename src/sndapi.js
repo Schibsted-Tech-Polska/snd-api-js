@@ -25,99 +25,103 @@
         this._resolution = null;
     }
 
-    /**
-     * Add success callback to the AJAX call.
+    SchoenfinkelizedResult.prototype = {
+        /**
+         * Add success callback to the AJAX call.
 
-     * @param callback {function} This will be called if the request completes successfully
-     * @returns {SchoenfinkelizedResult} self.
-     */
-    SchoenfinkelizedResult.prototype.success = function(callback) {
-        this._onSuccess.push(callback);
-        this._refire();
-        return this;
-    };
+         * @param callback {function} This will be called if the request completes successfully
+         * @returns {SchoenfinkelizedResult} self.
+         */
+        success: function(callback) {
+            this._onSuccess.push(callback);
+            this._refire();
+            return this;
+        },
 
-    /**
-     * Add fail (error/timeout) callback to the AJAX call
-     *
-     * @param callback {function} This will be called if the request fails
-     * @returns {SchoenfinkelizedResult} self.
-     */
-    SchoenfinkelizedResult.prototype.fail = function(callback) {
-        this._onError.push(callback);
-        this._refire();
-        return this;
-    };
+        /**
+         * Add fail (error/timeout) callback to the AJAX call
+         *
+         * @param callback {function} This will be called if the request fails
+         * @returns {SchoenfinkelizedResult} self.
+         */
+        fail: function(callback) {
+            this._onError.push(callback);
+            this._refire();
+            return this;
+        },
 
-    /**
-     * Used by the library to resolve the promise with a successful result
-     * @param {...object} all parameters will be passed to success listeners
-     * @returns {SchoenfinkelizedResult} self.
-     */
-    SchoenfinkelizedResult.prototype.resolve = function() {
-        var cb, args = this._resolution || arguments;
-        this._state = 1;
-        this._resolution = args;
-        while (!!(cb = this._onSuccess.shift())) {
-            cb.apply(this, args);
-        }
-        return this;
-    };
+        /**
+         * Used by the library to resolve the promise with a successful result
+         * @param {...object} all parameters will be passed to success listeners
+         * @returns {SchoenfinkelizedResult} self.
+         */
+        resolve: function() {
+            var cb, args = this._resolution || arguments;
+            this._state = 1;
+            this._resolution = args;
+            while (!!(cb = this._onSuccess.shift())) {
+                cb.apply(this, args);
+            }
+            return this;
+        },
 
-    /**
-     * Used by the library to resolve the promise with an unsuccessful result
-     * @param {...object} all parameters will be passed to fail listeners
-     * @returns {SchoenfinkelizedResult} self.
-     */
-    SchoenfinkelizedResult.prototype.reject = function() {
-        var cb, args = this._resolution || arguments;
-        this._state = 2;
-        this._resolution = args;
-        while (!!(cb = this._onError.shift())) {
-            cb.apply(this, args);
-        }
-        return this;
-    };
 
-    /**
-     * Used internally. Delegates the responsibilities to another SchoenfinkelizedResult.
-     *
-     * We are using this when the operation is not done immediately, but instead
-     * queued for later (when we have a valid token). We must reuse the handlers
-     * that are *and will be (in the future)* attached to the original result to
-     * fire them, when the new, internally called with .ajax again, operation ends.
-     *
-     * What it actually does is take the other listener array *references*
-     * and plug them in here, concatenating all listeners.
-     *
-     * @param otherResult
-     * @internal
-     * @returns {SchoenfinkelizedResult} self.
-     */
-    SchoenfinkelizedResult.prototype.handleWith = function(otherResult) {
-        this._onSuccess.forEach(function(item) { otherResult._onSuccess.push(item); });
-        this._onError.forEach(function(item) { otherResult._onError.push(item); });
-        this._onSuccess = otherResult._onSuccess; // use the reference
-        this._onError = otherResult._onError; // use the reference
-        this._refire();
-        return this;
-    };
+        /**
+         * Used by the library to resolve the promise with an unsuccessful result
+         * @param {...object} all parameters will be passed to fail listeners
+         * @returns {SchoenfinkelizedResult} self.
+         */
+        reject: function() {
+            var cb, args = this._resolution || arguments;
+            this._state = 2;
+            this._resolution = args;
+            while (!!(cb = this._onError.shift())) {
+                cb.apply(this, args);
+            }
+            return this;
+        },
 
-    /**
-     * If the promise was resolved before (either good or bad way, whatever),
-     * fire the appropriate, late-defined callbacks!
-     *
-     * @private
-     */
-    SchoenfinkelizedResult.prototype._refire = function() {
-        if (this._state > 0) {
-            // we know the outcome
-            if (this._state === 1) {
-                // if it's good, fire good stuff callbacks.
-                this.resolve();
-            } else {
-                // if it's bad, fire the one responsible.
-                this.reject();
+        /**
+         * Used internally. Delegates the responsibilities to another SchoenfinkelizedResult.
+         *
+         * We are using this when the operation is not done immediately, but instead
+         * queued for later (when we have a valid token). We must reuse the handlers
+         * that are *and will be (in the future)* attached to the original result to
+         * fire them, when the new, internally called with .ajax again, operation ends.
+         *
+         * What it actually does is take the other listener array *references*
+         * and plug them in here, concatenating all listeners.
+         *
+         * @param otherResult
+         * @internal
+         * @returns {SchoenfinkelizedResult} self.
+         */
+        handleWith: function(otherResult) {
+            this._onSuccess.forEach(function(item) { otherResult._onSuccess.push(item); });
+            this._onError.forEach(function(item) { otherResult._onError.push(item); });
+            this._onSuccess = otherResult._onSuccess; // use the reference
+            this._onError = otherResult._onError; // use the reference
+            this._refire();
+            return this;
+        },
+
+
+        /**
+         * If the promise was resolved before (either good or bad way, whatever),
+         * fire the appropriate, late-defined callbacks!
+         *
+         * @private
+         */
+        _refire: function() {
+            if (this._state > 0) {
+                // we know the outcome
+                if (this._state === 1) {
+                    // if it's good, fire good stuff callbacks.
+                    this.resolve();
+                } else {
+                    // if it's bad, fire the one responsible.
+                    this.reject();
+                }
             }
         }
     };
@@ -194,7 +198,7 @@
         function refreshToken(options) {
             var requestOptions = mergeOptions({
                 // the defaults:
-                async     : true
+                async: true
             }, options);
             requestOptions = mergeOptions(requestOptions, {
                 sign: false,
@@ -253,6 +257,7 @@
          * @param [options.sign=true] {boolean} sign this request with the x-snd-apisignature header
          * @param [options.async=true] {boolean} make this request asynchronous (non-blocking)
          * @param [options.timeout=30e3] {number} if request doesn't respond within this many milliseconds, fail.
+         * @param [options.retries=2] {retries} if request fails, refresh token and retry this many times.
          * @memberOf SNDAPI
          * @instance
          * @returns {SchoenfinkelizedResult} a promise
@@ -265,7 +270,8 @@
                     postData  : null,
                     preferJSON: true,
                     sign      : true,
-                    timeout   : 30e3
+                    timeout   : 30e3,
+                    retries   : 2
                 }, options),
                 req = createXMLHTTPObject(),
                 method = (requestOptions.postData) ? "POST" : "GET",
