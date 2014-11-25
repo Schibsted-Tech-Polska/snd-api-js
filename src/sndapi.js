@@ -133,14 +133,12 @@
      * @constructor
      * @alias SNDAPI
      * @param options {object} Options object
-     * @param options.refreshInterval {number?} Interval of signature refresh, defaults to 30 minutes
      * @param options.signatureServiceUrl {string?} URL for the signature service
      * @param options.prefixUrl {string?} Common prefix for all URLs called later by the API (you can use partial URLs later)
      * @param options.key {string} API key of your client
      */
     global.SNDAPI = global.SNDAPI || function(options) {
         var apiOptions = mergeOptions({
-                refreshInterval    : 30 * /*minutes*/6e4,
                 signatureServiceUrl: "//api.snd.no/sts/signature",
                 prefixUrl          : "//api.snd.no/news/v2/",
                 key                : null
@@ -184,9 +182,18 @@
             if (!apiOptions.key) {
                 throw new Error("API key is required for SND API initialization");
             }
-            if (state.tokenTimer) { clearInterval(state.tokenTimer); }
-            state.tokenTimer = setInterval(refreshToken, apiOptions.refreshInterval);
             return refreshToken(options);
+        }
+
+
+        function nextFullHour() {
+            var deadline;
+            deadline = new Date();
+            deadline.setHours(deadline.getHours()+1);
+            deadline.setMinutes(0);
+            deadline.setSeconds(0);
+            deadline.setMilliseconds(0);
+            return deadline;
         }
 
         /**
@@ -204,6 +211,13 @@
                 sign: false,
                 url : apiOptions.signatureServiceUrl + "?api-key=" + apiOptions.key
             });
+
+            // set up next refresh
+            if (state.tokenTimer) {
+                clearTimeout(state.tokenTimer);
+            }
+            state.tokenTimer = setTimeout(refreshToken, nextFullHour()-(new Date()));
+
             return ajax(requestOptions)
                 .success(function(response, statusDetails) {
                     var request;
@@ -345,6 +359,16 @@
             req.onreadystatechange = function() {
                 if (req.readyState !== 4) { return; }
                 if (req.status !== 200 && req.status !== 304) {
+                    if (req.status === 403) {
+                        // invalid security key, most likely
+                        // retry. maybe a very unfortunate timing.
+                        state.token = null;
+                        if (requestOptions.retries) {
+                            // some retries still left
+                            requestOptions.retries--;
+                            return ajax(requestOptions);
+                        }
+                    }
                     status = "fail";
                     statusDetails = {
                         statusCode: req.status,
