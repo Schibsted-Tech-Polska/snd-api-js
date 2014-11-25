@@ -1,6 +1,6 @@
 /**
  * sndapi-js - SND news API ajax call wrapper for the browser
- * @version v0.4.4
+ * @version v1.0.1
  * @link https://bitbucket.org/schibstednorge/snd-api-js
  * @license BSD-2-Clause
  */
