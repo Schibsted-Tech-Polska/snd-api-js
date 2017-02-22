@@ -139,8 +139,8 @@
      */
     global.SNDAPI = global.SNDAPI || function(options) {
         var apiOptions = mergeOptions({
-                signatureServiceUrl: "//api.snd.no/sts/signature",
-                prefixUrl          : "//api.snd.no/news/v2/",
+                signatureServiceUrl: "//api.schibsted.tech/proxy/sts/v3/signature",
+                prefixUrl          : "//api.schibsted.tech/content/v3/",
                 key                : null
             }, options),
             publicApi,
