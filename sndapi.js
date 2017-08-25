@@ -1,6 +1,6 @@
 /**
  * sndapi-js - SND news API ajax call wrapper for the browser
- * @version v1.0.1
+ * @version v1.0.2
  * @link https://bitbucket.org/schibstednorge/snd-api-js
  * @license BSD-2-Clause
  */
@@ -145,8 +145,8 @@
      */
     global.SNDAPI = global.SNDAPI || function(options) {
         var apiOptions = mergeOptions({
-                signatureServiceUrl: "//api.snd.no/sts/signature",
-                prefixUrl          : "//api.snd.no/news/v2/",
+                signatureServiceUrl: "//api.schibsted.tech/proxy/sts/v3/signature",
+                prefixUrl          : "//api.schibsted.tech/content/v3/",
                 key                : null
             }, options),
             publicApi,
@@ -285,13 +285,14 @@
         function ajax(options) {
             var requestOptions = mergeOptions({
                     // the defaults:
-                    async     : true,
-                    url       : null,
-                    postData  : null,
-                    preferJSON: true,
-                    sign      : true,
-                    timeout   : 30e3,
-                    retries   : 2
+                    async      : true,
+                    url        : null,
+                    postData   : null,
+                    contentType: null,
+                    preferJSON : true,
+                    sign       : true,
+                    timeout    : 30e3,
+                    retries    : 2
                 }, options),
                 req = createXMLHTTPObject(),
                 method = (requestOptions.postData) ? "POST" : "GET",
@@ -357,7 +358,13 @@
                 req.setRequestHeader('X-Snd-Apisignature', state.token);
                 req.setRequestHeader('X-Snd-Apikey', apiOptions.key);
             }
-            if (requestOptions.postData) { req.setRequestHeader('Content-type', 'application/x-www-form-urlencoded'); }
+            if (requestOptions.postData) {
+                if (requestOptions.contentType && requestOptions.contentType != null) {
+                    req.setRequestHeader('Content-type', requestOptions.contentType);
+                } else {
+                    req.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+                }
+            }
             if (requestOptions.preferJSON) {
                 req.setRequestHeader('Accept', 'application/json');
             }

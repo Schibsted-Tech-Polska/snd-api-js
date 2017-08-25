@@ -279,13 +279,14 @@
         function ajax(options) {
             var requestOptions = mergeOptions({
                     // the defaults:
-                    async     : true,
-                    url       : null,
-                    postData  : null,
-                    preferJSON: true,
-                    sign      : true,
-                    timeout   : 30e3,
-                    retries   : 2
+                    async      : true,
+                    url        : null,
+                    postData   : null,
+                    contentType: null,
+                    preferJSON : true,
+                    sign       : true,
+                    timeout    : 30e3,
+                    retries    : 2
                 }, options),
                 req = createXMLHTTPObject(),
                 method = (requestOptions.postData) ? "POST" : "GET",
@@ -351,7 +352,13 @@
                 req.setRequestHeader('X-Snd-Apisignature', state.token);
                 req.setRequestHeader('X-Snd-Apikey', apiOptions.key);
             }
-            if (requestOptions.postData) { req.setRequestHeader('Content-type', 'application/x-www-form-urlencoded'); }
+            if (requestOptions.postData) {
+                if (requestOptions.contentType && requestOptions.contentType != null) {
+                    req.setRequestHeader('Content-type', requestOptions.contentType);
+                } else {
+                    req.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+                }
+            }
             if (requestOptions.preferJSON) {
                 req.setRequestHeader('Accept', 'application/json');
             }
