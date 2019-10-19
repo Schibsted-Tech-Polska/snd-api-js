@@ -20,7 +20,7 @@
   "author": "Cezar “ikari” Pokorski <git@ikari.pl>",
   "license": "BSD-2-Clause",
   "devDependencies": {
-    "express": "~3.5",
+    "express": "~4.17",
     "gulp-bump": "~0.1",
     "gulp-coffee": "~1.4",
     "gulp-concat": "~2.2",
